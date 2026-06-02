@@ -28,16 +28,15 @@ when quoting APIs, logs, external text, or identifiers.
 ## Plugin Metadata
 
 - `.agents/plugins/marketplace.json` is the Codex marketplace manifest.
-- `plugins/chearmstrong-skills/.codex-plugin/plugin.json` is the Codex plugin
-  manifest and should expose the wrapper's `skills/` directory as the source of
-  skills.
+- `skills/.codex-plugin/plugin.json` is the Codex plugin manifest and should
+  expose the `skills/` directory as the source of skills.
 - `.claude-plugin/plugin.json` is the Claude plugin manifest for the same
   repository-level skill bundle.
+- `.github/plugin/marketplace.json` is the GitHub Copilot CLI marketplace
+  manifest, and `.github/plugin/plugin.json` is the GitHub Copilot CLI plugin
+  manifest.
 - Keep plugin manifests aligned with `skills/` whenever a skill is added,
   removed, or renamed.
-- Keep `plugins/chearmstrong-skills/skills/` aligned with `skills/`; Codex
-  packages the wrapper directory rather than following a symlink to the root
-  skills directory.
 - `CLAUDE.md` should remain a symlink to `AGENTS.md` so repository instructions
   stay single-sourced.
 
