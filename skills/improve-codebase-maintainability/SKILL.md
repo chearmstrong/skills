@@ -19,6 +19,7 @@ Focus on:
 - Repeated validation, mapping, parsing, formatting, or error-handling logic
 - Brittle tests or missing tests around risky areas
 - Refactors that improve locality and reduce cognitive load
+- Interfaces that leak sequencing, invariants, or implementation details to callers
 
 Avoid speculative architecture rewrites.
 
@@ -30,6 +31,9 @@ Use these terms consistently:
 - **Duplication** — repeated logic, structure, or behaviour that could be extracted safely.
 - **Locality** — how close related logic is to the code that uses it.
 - **Cognitive load** — how much context a maintainer must hold to understand or change the code.
+- **Interface** — everything a caller must know to use a module correctly: the public functions/types plus ordering, invariants, error modes, configuration, and performance expectations.
+- **Deep module** — a module with a small interface that hides useful complexity and gives callers leverage.
+- **Shallow module** — a module whose interface is nearly as complex as its implementation, so callers still need to understand too much.
 - **Refactor candidate** — a concrete, behaviour-preserving improvement.
 - **Shared utility** — a reusable helper/function/module that removes duplication without hiding important domain meaning.
 - **Extraction** — moving logic into a smaller function/module/file to improve readability or reuse.
@@ -113,6 +117,20 @@ Before making recommendations, inspect:
 - Existing patterns for errors, logging, config, and tests
 
 Do not introduce a new style if the repo already has a clear convention.
+
+### 6. Use interface depth as one lens
+
+Do not turn the review into an architecture redesign. Use deep/shallow module language only when it explains a practical maintainability problem.
+
+Look for places where callers must know too much:
+
+- The correct sequence of helper calls
+- Business invariants that are enforced at call sites
+- Implementation details exposed through parameters or return shapes
+- Tests that must mock or assert many internal steps instead of public outcomes
+- Similar orchestration repeated across handlers, jobs, components, or tests
+
+A good recommendation should move knowledge to the smallest sensible owner. Prefer one clear interface that preserves behaviour over many tiny helpers that force every caller to coordinate the work.
 
 ## Process
 
@@ -276,7 +294,21 @@ For TypeScript/Python, look for:
 - Weak config/env parsing
 - Stringly-typed states or actions
 
-#### F. Operational and security quality
+#### F. Weak module interfaces
+
+Flag shallow modules when they create real maintenance cost.
+
+Look for:
+
+- Callers coordinating several low-level helpers in the same order
+- Boolean flags or option bags exposing internal branches
+- Public functions that require callers to pass intermediate state
+- Domain rules split across multiple call sites
+- Tests coupled to private helper calls instead of observable behaviour
+
+Do not suggest a new module just because code can be grouped. Suggest it when a smaller interface would improve locality, reduce duplicated orchestration, or make behaviour easier to test.
+
+#### G. Operational and security quality
 
 For backend/AWS/serverless repos, also check:
 
@@ -297,7 +329,7 @@ For each candidate, include:
 
 - **Name** — short name for the candidate
 - **Files** — files/modules involved
-- **Category** — complexity, duplication, large file, tests, types, operational/security
+- **Category** — complexity, duplication, large file, tests, types, weak interface, operational/security
 - **Problem** — what makes this hard to maintain
 - **Evidence** — concrete examples from the code
 - **Suggested change** — what should change
