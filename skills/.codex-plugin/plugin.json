@@ -1,0 +1,35 @@
+{
+  "name": "chearmstrong-skills",
+  "version": "0.1.0",
+  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, commit messages, and review-comment workflows.",
+  "author": {
+    "name": "Che Armstrong"
+  },
+  "homepage": "https://github.com/chearmstrong/skills",
+  "repository": "https://github.com/chearmstrong/skills",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "skills",
+    "code-review",
+    "maintainability",
+    "github"
+  ],
+  "skills": "./",
+  "interface": {
+    "displayName": "Che Armstrong Skills",
+    "shortDescription": "Portable coding-agent skills",
+    "longDescription": "Use these skills for repository review, review-comment handling, maintainability checks, architecture compliance, and commit-message drafting.",
+    "developerName": "Che Armstrong",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Review this repository for maintainability issues.",
+      "Draft a conventional commit message for my current changes."
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "chearmstrong-skills",
+  "interface": {
+    "displayName": "Che Armstrong Skills"
+  },
+  "plugins": [
+    {
+      "name": "chearmstrong-skills",
+      "source": {
+        "source": "local",
+        "path": "./skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
