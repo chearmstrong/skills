@@ -40,6 +40,30 @@ If authorship is unclear, ask whether this is a colleague PR review or a self-re
 - Analyze changed lines against the checklist below and expand minimal surrounding context only when essential.
 - **Focus on blockers, risks, and correctness** - avoid nitpicking style unless it impacts maintainability or correctness.
 
+## Comment Gatekeeping
+
+A good PR review comment must be actionable, line-anchored, and worth the author's attention. Withhold the comment when the only support is personal preference, unfamiliarity with the codebase, or a hypothetical failure path that cannot be reached.
+
+| Potential comment | Post it when | Withhold it when |
+| --- | --- | --- |
+| Correctness | You can trace a concrete failing path from changed code. | The concern depends on impossible state or unchanged legacy behaviour. |
+| Security | You can name the trust boundary, actor, and impact. | It is a generic hardening idea without a reachable path. |
+| Performance or cost | The changed path is hot, unbounded, or materially more expensive. | The cost is theoretical, tiny, or outside the changed path. |
+| Tests | A changed behaviour lacks coverage at the right seam. | Existing tests cover it through public behaviour or the risk is negligible. |
+| Maintainability | The change violates a local convention or hides an invariant. | It is a naming/style preference that will not reduce future risk. |
+
+Ask for evidence instead of leaving a fix request when the issue may be valid but the diff does not prove it.
+
+## Scope Control
+
+Do not let a colleague PR review become a redesign exercise.
+
+- Comment on changed lines unless unchanged context is necessary to prove impact.
+- If the right fix is larger than the PR's apparent intent, ask whether the author wants to split follow-up work.
+- Do not request broad refactors for isolated duplication.
+- Do not ask the author to adopt a project-wide convention unless that convention is documented or visible in nearby code.
+- Put non-blocking observations in **RISKS** or **NICE TO HAVE**, not draft PR comments.
+
 ## Framework Guardrails (reference)
 
 ### Python / FastAPI
@@ -81,6 +105,18 @@ If authorship is unclear, ask whether this is a colleague PR review or a self-re
 - **Idempotency**: Non-idempotent operations in retryable contexts
 
 **Skip**: Style preferences, minor naming, formatting (unless it impacts readability significantly)
+
+## Anti-Patterns
+
+Never:
+
+- Leave a comment just to show that the review was thorough.
+- Ask vague discovery questions when evidence supports a concrete defect; frame the question around the specific failing path and requested change.
+- Hide a blocking issue in **NICE TO HAVE**.
+- Turn "I would write this differently" into a requested change.
+- Require tests that lock in private implementation details when public behaviour can be tested.
+- Flag old code unless the new diff makes it worse or depends on it.
+- Suggest a broad abstraction because two changed blocks look similar once.
 
 ## Draft Comment Format
 

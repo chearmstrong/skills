@@ -50,6 +50,33 @@ For each review comment:
 - If a comment requires understanding a larger pattern, expand context as needed
 - **Cap lookups**: Limit to 5 additional file reads or searches per comment unless essential
 
+## Validity Gates
+
+Before changing code, classify the comment with evidence:
+
+| Comment type | Fix threshold | Do not fix when |
+| --- | --- | --- |
+| Correctness or data loss | Reproduce or trace the failing path | The concern depends on impossible input or ignores an existing guard. |
+| Security or permissions | Identify the trust boundary and exploitable path | The comment is only "could be safer" without a reachable risk. |
+| Tests | Identify the behaviour not protected by existing tests | Existing tests already cover the behaviour through a better public seam. |
+| Style or maintainability | Show local convention drift or real cognitive cost | The change would churn code without reducing risk or confusion. |
+| External API best practice | Check pinned versions and official docs | The suggestion comes from a different version or generic guidance. |
+
+Treat "partially valid" as its own outcome. Apply only the part that is proven, and explain the part you intentionally did not change.
+
+## When Not To Fix
+
+Do not implement a review comment when:
+
+- It asks for behaviour outside the changed scope and the existing behaviour is intentional.
+- It would replace a local convention with a generic preference.
+- It would require a broad refactor to satisfy a narrow comment.
+- It is already addressed elsewhere in the call path, test suite, schema, config, or infrastructure.
+- It would make the code more complex than the risk justifies.
+- It depends on external guidance that does not match the repository's pinned version or deployment model.
+
+When not fixing, leave a crisp rationale with evidence. Do not apologise for rejecting an invalid comment.
+
 ## Output Format
 
 For each comment, provide:
@@ -104,3 +131,14 @@ scenario.
 - **Document decisions** — if a comment is invalid, explain why clearly
 - **Preserve existing behaviour** — unless the comment explicitly requests a change
 - **Check related code** — ensure fixes don't break other parts of the system
+
+## Anti-Patterns
+
+Never:
+
+- Fix a comment just because it is phrased confidently.
+- Convert every review note into code churn; invalid and duplicate comments need evidence, not edits.
+- Broaden a small fix into an architecture cleanup unless the user explicitly asks.
+- Add defensive code for states that the type system, schema, or upstream guard already prevents.
+- Resolve or report a comment as fixed when only the wording changed and the behavioural concern remains.
+- Add tests that assert private implementation details merely to satisfy a "missing test" comment.

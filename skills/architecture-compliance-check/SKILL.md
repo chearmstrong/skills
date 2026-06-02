@@ -7,9 +7,9 @@ description: Verify architecture and implementation follow documented best pract
 
 ## Overview
 
-Code must match documented architecture, follow established patterns, and never make assumptions without verification.
+Check whether a change still belongs to the architecture the repository has actually documented and implemented.
 
-**Core principle:** Verify against documentation, not assumptions. If it's not documented, document it or ask.
+**Core principle:** architecture compliance is not "does this look sensible?" It is "can I point to the document, existing implementation, or user rule that permits this shape?"
 
 ## When to Use
 
@@ -26,217 +26,68 @@ Code must match documented architecture, follow established patterns, and never 
 - Making assumptions about behaviour
 - Code doesn't match existing patterns
 
-## The Verification Process
+## Compliance Decision Tree
 
-### Phase 1: Documentation Review
+Use the smallest branch that answers the architectural question.
 
-**BEFORE implementing or reviewing:**
+| Situation | Required evidence | Action |
+| --- | --- | --- |
+| Change follows an existing pattern | Existing implementation plus matching docs or tests | Reuse the pattern; cite the concrete file or doc section in the review/summary. |
+| Change introduces a new pattern | ADR, design doc, issue/spec, or explicit user instruction | Stop if none exists. Add documentation or ask before implementing. |
+| Change crosses a module or service boundary | Boundary contract, public interface, schema, event shape, or dependency direction | Verify both sides. Do not infer compatibility from one caller. |
+| Change touches DynamoDB, retries, queues, or idempotency | User guardrails plus implementation tests | Treat missing pagination/idempotency tests as a compliance gap, not just a test gap. |
+| Change touches CDK/IaC | Existing stack organisation, logical IDs, `cdk diff` expectations, security rules | Flag replacement, IAM, encryption, retention, and alarm changes explicitly. |
+| Change relies on external API behaviour | Versioned dependency files plus official docs, Context7, AWS docs, or stable vendor docs | Prefer pinned-version evidence over generic latest examples. |
+| Docs and code disagree | Running code, tests, config, and deployment artefacts | Do not choose the convenient source. State the conflict and fix docs or code deliberately. |
 
-1. **Identify Relevant Documentation**
-   - Check `docs/` directory for architecture guides (if exists)
-   - Review `.github/copilot-instructions.md` for project patterns (if exists)
-   - Check component-specific README files
-   - Review user rules (DynamoDB, Python/FastAPI, CDK/IaC)
-   - **Use the best available external documentation source:**
-     - Context7 MCP for library/framework documentation if available
-     - AWS documentation or AWS API MCP tools if available
-     - Otherwise use official documentation, stable web sources, and project lock files
+## Failure Modes To Hunt
 
-2. **Read Documentation Completely**
-   - Don't skim - read every relevant section
-   - Understand the full pattern, not just snippets
-   - Note all requirements and constraints
-   - Identify dependencies and assumptions
-   - **For external libraries/frameworks:** Use Context7 if available; otherwise use official documentation and versioned project files
-   - **For AWS services:** Use AWS documentation tooling if available; otherwise use official AWS documentation
+These are the compliance bugs that often look like harmless cleanup:
 
-3. **Verify Documentation Exists**
-   - If pattern isn't documented → document it first
-   - If unclear → ask for clarification
-   - Don't assume undocumented patterns
-   - **For external tools:** Always check official documentation before assuming behaviour
+- **Pattern laundering:** copying a nearby shape without checking whether it belongs to the same layer, tenant boundary, consistency model, or lifecycle.
+- **Hidden contract changes:** altering return shapes, event schemas, pagination tokens, IAM resources, config names, or environment variables while treating the edit as internal.
+- **Documentation drift:** updating implementation without updating the architecture doc, README, ADR, runbook, or example that future agents will treat as source of truth.
+- **Boundary leaks:** making handlers know orchestration order, making domain modules know infrastructure details, or moving validation into a layer that cannot own the invariant.
+- **Cloud footguns:** replacing stateful resources, broadening IAM, dropping encryption/retention, introducing hot-path scans, or assuming Lambda/SQS executes exactly once.
+- **Best-practice cargo culting:** applying a framework recommendation that conflicts with the repository's pinned version, deployment model, or documented convention.
 
-### Phase 2: Pattern Verification
+## Project-Specific Traps
 
-**Check implementation matches documented patterns:**
+Check these traps before approving or finishing work:
 
-1. **Architectural Patterns**
-   - Does it follow documented architecture?
-   - Are design patterns used correctly?
-   - Does it match existing implementations?
+- **DynamoDB:** preserve `LastEvaluatedKey` exactly; keep PK/SK immutable; treat GSIs as projections; use `Query` rather than `Scan` in hot paths; make retryable writes idempotent.
+- **CDK/IaC:** preserve construct IDs; call out replacements; keep least-privilege IAM; retain stateful data; document `cdk diff` output before deploy/PR when infrastructure changed.
+- **Portable skills:** keep `SKILL.md` as the source of truth; use only required frontmatter unless optional spec fields add value; keep product-specific files optional.
+- **Documentation:** use British English in new prose; preserve quoted API/log spelling; keep docs aligned with implementation rather than aspirational architecture.
 
-2. **Project-Specific Patterns**
-   - File organisation matches project structure?
-   - Naming conventions followed?
-   - Integration points correct?
+## Evidence Rules
 
-3. **Component Integration**
-   - Follows documented integration patterns?
-   - Uses correct APIs/interfaces?
-   - Respects component boundaries?
+- Prefer repository docs and existing code over generic advice.
+- Prefer official or versioned external docs over blogs and examples.
+- When using MCP tools, treat them as accelerators, not authority by themselves.
+- If evidence is missing, report "not documented" as the finding; do not fill the gap with assumption.
+- If the user explicitly authorises a new pattern, document the decision in the smallest appropriate place.
 
-### Phase 3: Assumption Verification
+## Output Shape
 
-**Eliminate all assumptions:**
+When reporting compliance, include:
 
-1. **Verify, Don't Assume**
-   - Don't assume behaviour - check code/docs
-   - Don't assume requirements - read them
-   - Don't assume patterns - verify them
+- **Evidence:** files, docs, tests, or official sources checked.
+- **Verdict:** compliant, partially compliant, non-compliant, or undocumented.
+- **Risk:** what could break if the mismatch remains.
+- **Fix:** the smallest documentation, test, or implementation change needed.
 
-2. **Check Against Reality**
-   - Read actual implementation code
-   - Check actual configuration
-   - Verify actual behaviour
+## Anti-Patterns
 
-3. **Question Unclear Areas**
-   - If unclear → ask, don't guess
-   - If undocumented → document or ask
-   - If inconsistent → flag it
+Never:
 
-### Phase 4: Best Practices Check
-
-**Verify against established standards:**
-
-1. **User Rules Compliance**
-   - DynamoDB guardrails followed?
-   - Python/FastAPI standards met?
-   - CDK/IaC best practices applied?
-
-2. **External Library/Framework Best Practices**
-   - Use Context7 MCP to verify library/framework patterns if available
-   - Otherwise check official documentation and versioned project files
-   - Check FastAPI, boto3, AWS CDK, TypeScript, and pytest patterns against the relevant version
-   - Don't assume - always check official documentation
-
-3. **AWS Service Best Practices**
-   - Use AWS Documentation MCP to verify AWS service patterns if available
-   - Otherwise use official AWS documentation and API references
-   - Check AWS service-specific best practices
-   - Verify API usage patterns
-   - Confirm configuration best practices
-
-4. **Code Quality**
-   - Error handling comprehensive?
-   - Tests adequate?
-   - Observability included?
-
-5. **Security & Performance**
-   - Security best practices followed?
-   - Performance considerations addressed?
-   - Resource usage appropriate?
-
-## Common Documentation Sources
-
-**Project Documentation (check if exists):**
-- `docs/` - Architecture, deployment, configuration guides
-- `.github/copilot-instructions.md` - Project patterns and workflows
-- Component README files - Component-specific patterns
-- Architecture diagrams - Visual architecture references
-
-**User Rules (in system):**
-- DynamoDB guardrails - Pagination, GSI usage, cost patterns
-- Python/FastAPI standards - Async patterns, error handling, testing
-- CDK/IaC best practices - Stack organisation, security, testing
-
-**External Documentation:**
-- **MCP tools, if available** - Context7 for library/framework documentation; AWS documentation/API tools for AWS service patterns
-- **Official documentation fallback** - Project documentation sites, AWS documentation, API references, release notes, and versioned lock files
-
-**Code References:**
-- Existing implementations - Working examples in codebase
-- Test files - Expected behaviour and patterns
-- Configuration files - Actual configuration patterns
-
-## Verification Checklist
-
-**Before claiming compliance, verify:**
-
-- [ ] Relevant documentation read completely
-- [ ] **External libraries/frameworks verified via available documentation tools or official sources**
-- [ ] **AWS services verified via available documentation tools or official AWS documentation**
-- [ ] Implementation matches documented patterns
-- [ ] No assumptions made without verification
-- [ ] User rules followed (DynamoDB, Python/FastAPI, CDK)
-- [ ] Existing patterns referenced and followed
-- [ ] Integration points verified
-- [ ] Error handling comprehensive
-- [ ] Tests cover implementation
-- [ ] Observability included (if applicable)
-- [ ] Security considerations addressed
-
-## Red Flags - STOP and Verify
-
-**If you catch yourself:**
-- Assuming behaviour without checking code
-- Skipping documentation review
-- Implementing without reading full pattern
-- Guessing at requirements
-- Using patterns without understanding them
-- Making architectural decisions without documentation
-- Ignoring user rules
-- Proceeding with unclear requirements
-
-**STOP. Return to Phase 1 and verify.**
-
-## Examples
-
-**Good - Verified Against Documentation:**
-```
-[Implementing feature]
-
-1. Checked docs/ directory for architecture guides
-2. Found pattern: [specific pattern from documentation]
-3. Verified existing implementations follow this pattern
-4. Checked user rules for [relevant standards]
-5. Used available documentation tools or official sources to verify [library] patterns
-6. Implementation matches documented pattern exactly
-```
-
-**Bad - Assumed Pattern:**
-```
-[Implementing workflow node]
-
-1. Saw similar code, assumed pattern
-2. Implemented without reading documentation
-3. Used pattern incorrectly
-4. Doesn't match documented architecture
-```
-
-**Good - No Assumptions:**
-```
-[Using DynamoDB query]
-
-1. Read DynamoDB guardrails user rule
-2. Used available documentation tools or official AWS documentation to verify DynamoDB Query API patterns
-3. Verified pagination preserves LastEvaluatedKey exactly
-4. Checked existing queries follow pattern
-5. Ensured PK/SK projected for mutations
-6. Added test for multi-page traversal
-```
-
-**Bad - Made Assumptions:**
-```
-[Using DynamOBD query]
-
-1. Assumed pagination works like other databases
-2. Simplified LastEvaluatedKey (dropped attributes)
-3. Didn't check guardrails
-4. Broke pagination silently
-```
-
-## Documentation Gaps
-
-**If documentation is missing or unclear:**
-
-1. **Document it first** - Add to appropriate docs file
-2. **Or ask for clarification** - Don't proceed with assumptions
-3. **Flag the gap** - Note what's missing in review
-
-**Never:**
-- Proceed with undocumented assumptions
-- Create new patterns without documenting
-- Ignore documentation gaps
+- Approve a new architectural pattern because it resembles a familiar pattern from another project.
+- Treat "there is similar code" as sufficient evidence without checking ownership and context.
+- Move code across layers just to reduce duplication.
+- Rewrite docs to justify accidental implementation drift.
+- Hide a behavioural change behind terms such as cleanup, simplification, or refactor.
+- Accept infra changes without checking replacement/IAM/security implications.
+- Continue through an undocumented architectural decision when the user has not authorised it.
 
 ## Integration with Other Skills
 
@@ -248,8 +99,4 @@ Code must match documented architecture, follow established patterns, and never 
 
 ## The Bottom Line
 
-**Documentation is the source of truth.**
-
-Verify against it. Never assume. Always check.
-
-If it's not documented, document it or ask.
+Compliance means the change has traceable evidence. If the evidence is missing, the correct result is "undocumented", not "probably fine".

@@ -23,6 +23,22 @@ Focus on:
 
 Avoid speculative architecture rewrites.
 
+## Progressive Disclosure
+
+Use this `SKILL.md` for the judgement framework, candidate format, and implementation workflow.
+
+Load [`CHECKLIST.md`](CHECKLIST.md) only when:
+
+- The user asks for a broad maintainability review of a whole repository or large module.
+- The codebase is unfamiliar and you need a scan checklist to avoid missing common hotspot types.
+- You need category-specific prompts for duplication, large files, test safety, types, or backend/AWS maintainability.
+
+Do not load `CHECKLIST.md` when:
+
+- The user already named a specific file, module, or refactor candidate.
+- You are implementing a previously selected candidate.
+- The repository is small enough that the relevant hotspot is already obvious from the request.
+
 ## Vocabulary
 
 Use these terms consistently:
@@ -136,9 +152,7 @@ A good recommendation should move knowledge to the smallest sensible owner. Pref
 
 ### 1. Explore the repo
 
-First, understand the project shape.
-
-Look for:
+First, understand just enough of the project shape to avoid generic advice:
 
 - Main application entry points
 - Domain/module boundaries
@@ -148,178 +162,23 @@ Look for:
 - Existing conventions
 - Recently changed or high-churn areas if git history is available
 
-Run safe inspection commands where possible, for example:
-
-```bash
-find . -type f \
-  \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" \) \
-  | grep -v node_modules \
-  | grep -v dist \
-  | grep -v build
-```
-
-For large file detection, prefer code lines over raw lines where possible.
-
-Useful commands:
-
-```bash
-# Largest source files by line count
-find . -type f \
-  \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" \) \
-  | grep -v node_modules \
-  | grep -v dist \
-  | grep -v build \
-  | xargs wc -l \
-  | sort -nr \
-  | head -30
-```
-
-```bash
-# Possible duplicate-heavy areas by repeated imports or names
-grep -R "function " . --include="*.ts" --include="*.tsx" --include="*.js" --include="*.py" \
-  | sed 's/(.*//' \
-  | sort \
-  | uniq -c \
-  | sort -nr \
-  | head -30
-```
-
-If project tooling exists, prefer it over generic commands.
-
-Examples:
-
-```bash
-npm test
-npm run lint
-npm run typecheck
-npm run build
-pnpm test
-pytest
-ruff check .
-mypy .
-```
+For broad scans, load `CHECKLIST.md` before inspecting files. For targeted work, skip it and inspect only the relevant files and nearby tests.
 
 Do not run destructive commands.
 
 ### 2. Identify hotspots
 
-Look for maintainability problems in these categories.
+Look for maintainability problems in these categories, using `CHECKLIST.md` for the detailed scan prompts when needed:
 
-#### A. Complex or unreadable code
+- **Complexity:** code that requires too much local reasoning to change safely.
+- **Duplication:** repeated business rules, orchestration, mapping, validation, config, or test setup.
+- **Large files:** files with multiple responsibilities, not merely many lines.
+- **Weak tests:** risky code with no behavioural guardrail, or tests coupled to private implementation.
+- **Type/contract weakness:** module seams that rely on untyped data, nullable assumptions, or stringly states.
+- **Weak interfaces:** callers must know ordering, invariants, intermediate state, or implementation details.
+- **Operational/security maintainability:** repeated clients, env parsing, retry/idempotency, logging, or handler orchestration.
 
-Flag code that has:
-
-- Deep nesting
-- Long functions
-- Many branches
-- Boolean flag arguments controlling unrelated behaviour
-- Mixed levels of abstraction
-- Hidden side effects
-- Unclear naming
-- Large parameter lists
-- Repeated defensive checks
-- Comments explaining confusing code instead of clearer code
-
-#### B. Duplication
-
-Look for repeated:
-
-- Mapping/transformation logic
-- Validation logic
-- Error handling
-- Logging setup
-- Config parsing
-- Date/time formatting
-- API response/request shaping
-- Test setup
-- AWS client creation
-- Retry/backoff logic
-- Permission checks
-- Magic strings/constants
-
-Classify duplication as:
-
-- **Mechanical duplication** — repeated boilerplate that is safe to extract.
-- **Domain duplication** — repeated business rules that should likely have one owner.
-- **Incidental duplication** — repeated shape that may not be worth extracting.
-- **Test duplication** — repeated setup that may benefit from factories/builders.
-
-#### C. Large files
-
-Large files are not automatically bad.
-
-Flag a large file when it shows more than one reason to split:
-
-- Multiple responsibilities
-- Multiple domains/concepts
-- Mixed infrastructure and domain logic
-- Many unrelated helper functions
-- Test file mirrors too many behaviours
-- Frequent scrolling needed to understand one change
-- Changes to one feature often risk another feature
-
-Use project standards if available.
-
-If no standard exists, use these soft signals:
-
-- 300+ lines: inspect
-- 500+ lines: likely worth discussing
-- 800+ lines: strong candidate for splitting
-- 1000+ lines: high-priority hotspot unless generated
-
-Do not flag generated files, migrations, snapshots, lockfiles, or vendor files.
-
-#### D. Weak tests around risky code
-
-Flag refactor candidates where tests are missing or too coupled to implementation.
-
-Look for:
-
-- Logic-heavy code with no tests
-- Tests that mock too much
-- Tests that assert internal calls instead of outcomes
-- Large snapshots hiding important behaviour
-- Repeated test setup
-- Flaky or order-dependent tests
-
-#### E. Type and contract issues
-
-For TypeScript/Python, look for:
-
-- Overuse of `any`
-- Untyped dictionaries/objects crossing module seams
-- Optional fields that are treated as required
-- Repeated runtime checks that could be modelled once
-- Missing return types on important functions
-- Weak config/env parsing
-- Stringly-typed states or actions
-
-#### F. Weak module interfaces
-
-Flag shallow modules when they create real maintenance cost.
-
-Look for:
-
-- Callers coordinating several low-level helpers in the same order
-- Boolean flags or option bags exposing internal branches
-- Public functions that require callers to pass intermediate state
-- Domain rules split across multiple call sites
-- Tests coupled to private helper calls instead of observable behaviour
-
-Do not suggest a new module just because code can be grouped. Suggest it when a smaller interface would improve locality, reduce duplicated orchestration, or make behaviour easier to test.
-
-#### G. Operational and security quality
-
-For backend/AWS/serverless repos, also check:
-
-- Missing structured logging
-- Inconsistent error handling
-- Secrets/env vars read directly across many files
-- Repeated AWS client setup
-- No timeout/retry strategy
-- Unsafe logging of sensitive data
-- Missing idempotency where retries are expected
-- Poor separation between handler, validation, domain logic, and infrastructure
+Do not suggest a candidate just because a category appears. Tie every candidate to a concrete future-change cost.
 
 ## 3. Present candidates
 
