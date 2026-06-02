@@ -1,6 +1,8 @@
 # Maintainability Review Checklist
 
-Use this checklist when reviewing a repo for maintainability improvements.
+Use this optional broad-scan checklist only when `SKILL.md` says to load it.
+For targeted refactors or already-obvious hotspots, keep the review in
+`SKILL.md` and do not load this file.
 
 ## Code quality
 
@@ -72,7 +74,20 @@ Check for:
 - nullable fields used unsafely
 - stringly-typed states
 - weak return types
-- repeated shape checks that could be centralized
+- repeated shape checks that could be centralised
+
+## Weak interfaces
+
+Check for modules where callers must know too much:
+
+- repeated sequencing of the same helper calls
+- option bags or boolean flags exposing unrelated internal branches
+- public functions that require callers to pass intermediate state
+- domain rules split across several call sites
+- tests coupled to private helpers instead of observable behaviour
+
+Prefer a deeper interface only when it improves locality, reduces repeated
+orchestration, or makes behaviour easier to test.
 
 ## Backend/AWS checks
 

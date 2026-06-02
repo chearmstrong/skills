@@ -151,6 +151,23 @@ Codex through the direct-install path are available to OpenCode too.
 If a target directory already exists, remove or rename it before creating the
 symlink.
 
+## Validate Skills
+
+Validate every skill directory in this repository:
+
+```bash
+./scripts/validate-skills.sh
+```
+
+Validate one skill directory:
+
+```bash
+./scripts/validate-skills.sh skills/review-pr
+```
+
+The script validates individual skill roots because `skills/` is a bundle
+directory, not a skill directory with its own `SKILL.md`.
+
 ## Documentation
 
 - [Codex skills](https://developers.openai.com/codex/skills)
