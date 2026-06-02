@@ -17,33 +17,78 @@ cd skills
 This repository contains:
 
 - individual portable skills under `skills/`
-- a Claude plugin bundle at the repository root, described by `.claude-plugin/`
+- a Claude plugin bundle and marketplace at the repository root, described by
+  `.claude-plugin/`
+- a GitHub Copilot agent plugin bundle and marketplace, described by
+  `.github/plugin/`
 - a Codex marketplace at `.agents/plugins/marketplace.json`, pointing to the
   Codex plugin package under `skills/`
 
 Use the plugin bundle when you want the skills namespaced and distributed
-together. Install individual skills when you want the simplest setup or Copilot
-support.
+together. Install individual skills when you want the simplest direct setup or
+when using an agent surface that does not support plugin marketplaces.
 
-| Goal | Agents | Method |
-| --- | --- | --- |
-| Use the whole bundle | Claude Code | Point Claude at this checkout with `--plugin-dir`. |
-| Use the whole bundle | Codex | Add this checkout through a Codex marketplace entry. |
-| Use selected skills | Codex, Claude Code, Copilot | Symlink or copy individual directories from `skills/`. |
+| Goal                 | Agents                                    | Method                                                                          |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| Use the whole bundle | Claude Code                               | Add this checkout as a Claude marketplace, then install `chearmstrong-skills`.  |
+| Use the whole bundle | GitHub Copilot CLI, VS Code Insiders      | Add this checkout as a Copilot marketplace, then install `chearmstrong-skills`. |
+| Use the whole bundle | Codex                                     | Add this checkout through a Codex marketplace entry.                            |
+| Use selected skills  | Codex, Claude Code, Copilot CLI, OpenCode | Symlink or copy individual directories from `skills/`.                          |
 
 ### Claude Plugin Bundle
 
-For a local Claude Code session, point Claude at the repository root:
+For normal Claude Code use, add this repository as a plugin marketplace and
+install the bundled plugin:
+
+```bash
+claude plugin marketplace add chearmstrong/skills
+claude plugin install chearmstrong-skills@chearmstrong-skills
+```
+
+That installs the plugin for future sessions. Plugin-bundled skills are
+namespaced under the plugin name, such as `/chearmstrong-skills:review-pr`.
+
+For local development or one-off testing without installing the plugin, point a
+Claude Code session at the repository root:
 
 ```bash
 claude --plugin-dir "$(pwd)"
 ```
 
-Plugin-bundled skills are namespaced under the plugin name, such as
-`/chearmstrong-skills:review-pr`.
-
 Do not symlink the whole repository into `~/.claude/skills`; that directory is
-for individual skills.
+for individual skills or skills-directory plugins, not a marketplace checkout.
+
+### GitHub Copilot Plugin Bundle
+
+GitHub Copilot CLI and VS Code Insiders agent plugins support plugin
+marketplaces and can install this repository as a bundle.
+
+For GitHub Copilot CLI:
+
+```bash
+copilot plugin marketplace add chearmstrong/skills
+copilot plugin install chearmstrong-skills@chearmstrong-skills
+```
+
+For VS Code Insiders, enable agent plugins if required, then add
+`chearmstrong/skills` to the `Chat > Plugins: Marketplaces` setting. You can
+also edit `settings.json` directly:
+
+```json
+{
+  "chat.plugins.marketplaces": [
+    "github/copilot-plugins",
+    "github/awesome-copilot",
+    "chearmstrong/skills"
+  ]
+}
+```
+
+Use the Agent Plugins view in the Extensions panel, or search for
+`@agentPlugins`, to discover and install plugins from configured marketplaces.
+
+This uses `.github/plugin/marketplace.json` and `.github/plugin/plugin.json`.
+The plugin exposes the same skill directories under `skills/`.
 
 ### Codex Plugin Bundle
 
@@ -93,6 +138,16 @@ mkdir -p ~/.copilot/skills
 ln -s "$(pwd)/skills/<skill-name>" ~/.copilot/skills/<skill-name>
 ```
 
+OpenCode:
+
+```bash
+mkdir -p ~/.config/opencode/skills
+ln -s "$(pwd)/skills/<skill-name>" ~/.config/opencode/skills/<skill-name>
+```
+
+OpenCode also discovers skills from `~/.agents/skills`, so skills installed for
+Codex through the direct-install path are available to OpenCode too.
+
 If a target directory already exists, remove or rename it before creating the
 symlink.
 
@@ -107,6 +162,10 @@ symlink.
 - [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory)
 - [GitHub Copilot agent skills](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
 - [GitHub Copilot customisation cheat sheet](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
+- [GitHub Copilot CLI plugins](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference)
+- [VS Code agent plugins](https://code.visualstudio.com/docs/copilot/customization/agent-plugins)
+- [VS Code Copilot settings](https://code.visualstudio.com/docs/copilot/reference/copilot-settings)
+- [OpenCode agent skills](https://opencode.ai/docs/skills/)
 
 `CLAUDE.md` is intentionally a symlink to `AGENTS.md` so agent instructions stay
 single-sourced.
@@ -114,17 +173,19 @@ single-sourced.
 ## Skills
 
 <!-- skills-table:start -->
-| Skill | Description |
-| --- | --- |
-| `architecture-compliance-check` | Verify architecture and implementation follow documented best practices, project patterns, and user rules. Check against project documentation, ensure no assumptions are made, and verify implementation matches documented patterns. Use when reviewing code, implementing features, making architectural decisions, or before committing changes. |
-| `commit-message` | Generate a Conventional Commits message from uncommitted changes. Use when the user asks for a commit message, conventional commit, or summary of staged and unstaged changes without committing. |
-| `documentation-review` | Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, uses British English, and has no duplication or redundancy. Works with or without MCP; prefers Context7 / AWS docs MCP when enabled, otherwise web search and official docs. Use when reviewing documentation files, code comments, docstrings, or when documentation may be outdated. Applies to markdown files, README files, code comments, and docstrings. |
-| `execute-plan-with-gates` | Use only when the user explicitly asks to execute an implementation plan with gated or ungated phase controls, including whether to pause between phases, ask before commits, and ask before moving to the next phase. Do not use for generic plan execution unless the user mentions gates, gated mode, ungated mode, approvals, phase checkpoints, or commit permission. |
-| `gh-address-copilot-comments` | Inspect, fix, and resolve GitHub Copilot automated pull request review comments. Use when the user asks to check, triage, fix, reply to, address, or resolve Copilot PR review comments, especially unresolved inline review threads that require GitHub GraphQL via the GitHub CLI. |
-| `improve-codebase-maintainability` | Review a codebase for practical maintainability improvements: overly complex code, duplicated logic, large files, weak abstractions, unclear naming, poor locality, and refactoring opportunities. Use when the user wants to improve code quality without changing behaviour. |
-| `manual-review-comment-export` | Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the `- path:line` plus quoted-comment format for the review-comments skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested. |
-| `review-comments` | Address PR or code review comments. Use when given review comments to verify before fixing, research best practices with available documentation tools or official sources, and document whether each comment was valid, partially valid, or invalid. |
-| `review-pr` | Review a colleague's pull request or branch diff read-only. Use only when the user is reviewing someone else's PR, a PR URL/number, or another author's branch, and wants draft review comments without editing code. |
+
+| Skill                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `architecture-compliance-check`    | Verify architecture and implementation follow documented best practices, project patterns, and user rules. Check against project documentation, ensure no assumptions are made, and verify implementation matches documented patterns. Use when reviewing code, implementing features, making architectural decisions, or before committing changes.                                                                                                                   |
+| `commit-message`                   | Generate a Conventional Commits message from uncommitted changes. Use when the user asks for a commit message, conventional commit, or summary of staged and unstaged changes without committing.                                                                                                                                                                                                                                                                      |
+| `documentation-review`             | Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, uses British English, and has no duplication or redundancy. Works with or without MCP; prefers Context7 / AWS docs MCP when enabled, otherwise web search and official docs. Use when reviewing documentation files, code comments, docstrings, or when documentation may be outdated. Applies to markdown files, README files, code comments, and docstrings. |
+| `execute-plan-with-gates`          | Use only when the user explicitly asks to execute an implementation plan with gated or ungated phase controls, including whether to pause between phases, ask before commits, and ask before moving to the next phase. Do not use for generic plan execution unless the user mentions gates, gated mode, ungated mode, approvals, phase checkpoints, or commit permission.                                                                                             |
+| `gh-address-copilot-comments`      | Inspect, fix, and resolve GitHub Copilot automated pull request review comments. Use when the user asks to check, triage, fix, reply to, address, or resolve Copilot PR review comments, especially unresolved inline review threads that require GitHub GraphQL via the GitHub CLI.                                                                                                                                                                                   |
+| `improve-codebase-maintainability` | Review a codebase for practical maintainability improvements: overly complex code, duplicated logic, large files, weak abstractions, unclear naming, poor locality, and refactoring opportunities. Use when the user wants to improve code quality without changing behaviour.                                                                                                                                                                                         |
+| `manual-review-comment-export`     | Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the `- path:line` plus quoted-comment format for the review-comments skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested.                                                                                                                                                 |
+| `review-comments`                  | Address PR or code review comments. Use when given review comments to verify before fixing, research best practices with available documentation tools or official sources, and document whether each comment was valid, partially valid, or invalid.                                                                                                                                                                                                                  |
+| `review-pr`                        | Review a colleague's pull request or branch diff read-only. Use only when the user is reviewing someone else's PR, a PR URL/number, or another author's branch, and wants draft review comments without editing code.                                                                                                                                                                                                                                                  |
+
 <!-- skills-table:end -->
 
 ## Notes
