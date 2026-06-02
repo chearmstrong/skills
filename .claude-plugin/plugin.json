@@ -1,0 +1,20 @@
+{
+  "name": "chearmstrong-skills",
+  "displayName": "Che Armstrong Skills",
+  "version": "0.1.0",
+  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, commit messages, and review-comment workflows.",
+  "author": {
+    "name": "Che Armstrong"
+  },
+  "homepage": "https://github.com/chearmstrong/skills",
+  "repository": "https://github.com/chearmstrong/skills",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "skills",
+    "code-review",
+    "maintainability",
+    "github"
+  ],
+  "skills": "./skills/"
+}
