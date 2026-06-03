@@ -5,28 +5,19 @@ Portable personal coding-agent skills shared from `~/.agents`.
 These skills are maintained as normal skill directories and can be copied or
 symlinked into compatible agent skill folders.
 
-## Install
+## Repository Contents
 
-Clone the repository:
+- Individual portable skills under `skills/`.
+- A Claude plugin bundle and marketplace at the repository root, described by
+  `.claude-plugin/`.
+- A GitHub Copilot agent plugin bundle and marketplace, described by
+  `.github/plugin/`.
+- A Codex marketplace at `.agents/plugins/marketplace.json`, pointing to the
+  Codex plugin package under `skills/`.
 
-```bash
-git clone https://github.com/chearmstrong/skills.git
-cd skills
-```
-
-This repository contains:
-
-- individual portable skills under `skills/`
-- a Claude plugin bundle and marketplace at the repository root, described by
-  `.claude-plugin/`
-- a GitHub Copilot agent plugin bundle and marketplace, described by
-  `.github/plugin/`
-- a Codex marketplace at `.agents/plugins/marketplace.json`, pointing to the
-  Codex plugin package under `skills/`
-
-Use the plugin bundle when you want the skills namespaced and distributed
-together. Install individual skills when you want the simplest direct setup or
-when using an agent surface that does not support plugin marketplaces.
+Use the plugin bundle when you want the skills namespaced and distributed as a
+set. Install individual skills when you want the simplest direct setup or when
+using an agent surface that does not support plugin marketplaces.
 
 | Goal                 | Agents                                    | Method                                                                          |
 | -------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
@@ -34,158 +25,6 @@ when using an agent surface that does not support plugin marketplaces.
 | Use the whole bundle | GitHub Copilot CLI, VS Code Insiders      | Add this checkout as a Copilot marketplace, then install `chearmstrong-skills`. |
 | Use the whole bundle | Codex                                     | Add this checkout through a Codex marketplace entry.                            |
 | Use selected skills  | Codex, Claude Code, Copilot CLI, OpenCode | Symlink or copy individual directories from `skills/`.                          |
-
-### Claude Plugin Bundle
-
-For normal Claude Code use, add this repository as a plugin marketplace and
-install the bundled plugin:
-
-```bash
-claude plugin marketplace add chearmstrong/skills
-claude plugin install chearmstrong-skills@chearmstrong-skills
-```
-
-That installs the plugin for future sessions. Plugin-bundled skills are
-namespaced under the plugin name, such as `/chearmstrong-skills:review-pr`.
-
-For local development or one-off testing without installing the plugin, point a
-Claude Code session at the repository root:
-
-```bash
-claude --plugin-dir "$(pwd)"
-```
-
-Do not symlink the whole repository into `~/.claude/skills`; that directory is
-for individual skills or skills-directory plugins, not a marketplace checkout.
-
-### GitHub Copilot Plugin Bundle
-
-GitHub Copilot CLI and VS Code Insiders agent plugins support plugin
-marketplaces and can install this repository as a bundle.
-
-For GitHub Copilot CLI:
-
-```bash
-copilot plugin marketplace add chearmstrong/skills
-copilot plugin install chearmstrong-skills@chearmstrong-skills
-```
-
-For VS Code Insiders, enable agent plugins if required, then add
-`chearmstrong/skills` to the `Chat > Plugins: Marketplaces` setting. You can
-also edit `settings.json` directly:
-
-```json
-{
-  "chat.plugins.marketplaces": [
-    "github/copilot-plugins",
-    "github/awesome-copilot",
-    "chearmstrong/skills"
-  ]
-}
-```
-
-Use the Agent Plugins view in the Extensions panel, or search for
-`@agentPlugins`, to discover and install plugins from configured marketplaces.
-
-This uses `.github/plugin/marketplace.json` and `.github/plugin/plugin.json`.
-The plugin exposes the same skill directories under `skills/`.
-
-### Codex Plugin Bundle
-
-The `skills/.codex-plugin/plugin.json` file describes the Codex plugin bundle.
-Codex discovers local plugins through marketplaces, so this repository includes
-a marketplace file that points to `skills/`.
-
-To add this repository as a Codex marketplace from the Codex app:
-
-- Source: `chearmstrong/skills`
-- Git ref: `main`
-- Sparse paths: leave blank
-
-For the CLI equivalent:
-
-```bash
-codex plugin marketplace add chearmstrong/skills --ref main
-```
-
-For local personal use, direct skill install is usually simpler. Use the Codex
-plugin route when you want plugin namespacing, marketplace distribution, or
-workspace sharing.
-
-### Direct Skill Install
-
-Symlink or copy the individual skill directories you want. Replace
-`<skill-name>` with a directory under `skills/`.
-
-Codex:
-
-```bash
-mkdir -p ~/.agents/skills
-ln -s "$(pwd)/skills/<skill-name>" ~/.agents/skills/<skill-name>
-```
-
-Claude Code:
-
-```bash
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)/skills/<skill-name>" ~/.claude/skills/<skill-name>
-```
-
-GitHub Copilot:
-
-```bash
-mkdir -p ~/.copilot/skills
-ln -s "$(pwd)/skills/<skill-name>" ~/.copilot/skills/<skill-name>
-```
-
-OpenCode:
-
-```bash
-mkdir -p ~/.config/opencode/skills
-ln -s "$(pwd)/skills/<skill-name>" ~/.config/opencode/skills/<skill-name>
-```
-
-OpenCode also discovers skills from `~/.agents/skills`, so skills installed for
-Codex through the direct-install path are available to OpenCode too.
-
-If a target directory already exists, remove or rename it before creating the
-symlink.
-
-## Validate Skills
-
-Validate every skill directory in this repository:
-
-```bash
-./scripts/validate-skills.sh
-```
-
-Validate one skill directory:
-
-```bash
-./scripts/validate-skills.sh skills/review-pr
-```
-
-The script validates individual skill roots because `skills/` is a bundle
-directory, not a skill directory with its own `SKILL.md`.
-
-## Documentation
-
-- [Codex skills](https://developers.openai.com/codex/skills)
-- [Codex plugins](https://developers.openai.com/codex/plugins)
-- [Build Codex plugins](https://developers.openai.com/codex/plugins/build)
-- [Claude Code skills](https://code.claude.com/docs/en/skills)
-- [Claude Code plugins](https://code.claude.com/docs/en/plugins)
-- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
-- [Claude Code memory and CLAUDE.md](https://code.claude.com/docs/en/memory)
-- [GitHub Copilot agent skills](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
-- [GitHub Copilot customisation cheat sheet](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
-- [GitHub Copilot CLI plugins](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference)
-- [VS Code agent plugins](https://code.visualstudio.com/docs/copilot/customization/agent-plugins)
-- [VS Code Copilot settings](https://code.visualstudio.com/docs/copilot/reference/copilot-settings)
-- [OpenCode agent skills](https://opencode.ai/docs/skills/)
-
-`CLAUDE.md` is intentionally a symlink to `AGENTS.md` so agent instructions stay
-single-sourced.
 
 ## Skills
 
@@ -205,6 +44,41 @@ single-sourced.
 
 <!-- skills-table:end -->
 
+## Install
+
+Clone the repository:
+
+```bash
+git clone https://github.com/chearmstrong/skills.git
+cd skills
+```
+
+See [Install Skills](docs/install.md) for platform-specific plugin and direct
+skill install instructions.
+
+## Validate Skills
+
+Validate every skill directory in this repository:
+
+```bash
+./scripts/validate-skills.sh
+```
+
+Validate one skill directory:
+
+```bash
+./scripts/validate-skills.sh skills/review-pr
+```
+
+The script validates individual skill roots because `skills/` is a bundle
+directory, not a skill directory with its own `SKILL.md`.
+
+## More Documentation
+
+- [Install Skills](docs/install.md)
+- [Working Style](docs/working-style.md)
+- [Resources](docs/resources.md)
+
 ## Notes
 
 - `SKILL.md` is the portable source of truth for each skill.
@@ -212,3 +86,5 @@ single-sourced.
   skill installs use the same source files.
 - Optional helper scripts live inside each skill's `scripts/` directory.
 - Product-specific metadata is optional and should not be required to use a skill.
+- `CLAUDE.md` is intentionally a symlink to `AGENTS.md` so agent instructions
+  stay single-sourced.
