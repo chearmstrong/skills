@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cost-to-serve Estimator"
+  short_description: "Estimate AWS and LLM workflow serving costs"
+  default_prompt: "Use $cost-to-serve-estimator to estimate AWS and Bedrock cost-to-serve for this repository."
