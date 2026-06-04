@@ -1,7 +1,7 @@
 {
   "name": "chearmstrong-skills",
   "displayName": "Che Armstrong Skills",
-  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, commit messages, and review-comment workflows.",
+  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, commit messages, and review-comment workflows.",
   "author": {
     "name": "Che Armstrong"
   },
@@ -13,6 +13,7 @@
     "skills",
     "code-review",
     "maintainability",
+    "cost-estimation",
     "github"
   ],
   "skills": "./skills/"

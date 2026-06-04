@@ -1,7 +1,7 @@
 {
   "name": "chearmstrong-skills",
   "version": "0.1.0",
-  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, commit messages, and review-comment workflows.",
+  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, commit messages, and review-comment workflows.",
   "author": {
     "name": "Che Armstrong"
   },
@@ -13,13 +13,14 @@
     "skills",
     "code-review",
     "maintainability",
+    "cost-estimation",
     "github"
   ],
   "skills": "./",
   "interface": {
     "displayName": "Che Armstrong Skills",
     "shortDescription": "Portable coding-agent skills",
-    "longDescription": "Use these skills for repository review, review-comment handling, maintainability checks, architecture compliance, and commit-message drafting.",
+    "longDescription": "Use these skills for repository review, review-comment handling, maintainability checks, architecture compliance, cost estimation, and commit-message drafting.",
     "developerName": "Che Armstrong",
     "category": "Developer Tools",
     "capabilities": [
@@ -29,6 +30,7 @@
     ],
     "defaultPrompt": [
       "Review this repository for maintainability issues.",
+      "Estimate the AWS and LLM cost-to-serve for this repository.",
       "Draft a conventional commit message for my current changes."
     ]
   }
