@@ -1,6 +1,6 @@
 ---
 name: cost-to-serve-estimator
-description: Estimate and document cost-to-serve for cloud-hosted AI, LLM, AWS Bedrock, agent workflow, serverless, container, or SaaS control-plane systems. Use when the user asks for rough or granular serving costs, internal sponsorship estimates, squad/team scaling projections, AWS cost breakdowns, Bedrock model cost analysis, or reusable documentation of cost assumptions.
+description: Estimate and document cost-to-serve for cloud-hosted AI, LLM, AWS Bedrock, agent workflow, serverless, container, or SaaS control-plane systems. Use when the user asks for rough or granular service run-rate costs, infrastructure baseline estimates, sponsorship estimates, squad/team scaling projections, AWS cost breakdowns, Bedrock model cost analysis, or reusable documentation of cost assumptions.
 ---
 
 # Cost-to-serve Estimator
@@ -35,15 +35,16 @@ Do not hard-code remembered prices. Always use current provider pricing for the 
 4. Build the cost model.
    - Split fixed environment baseline from per-run variable cost.
    - Use formulae rather than only totals so future readers can update assumptions.
+   - Use a deterministic calculator, spreadsheet, shell, script, or notebook for arithmetic once inputs are chosen.
    - For each workflow, model the dominant cost driver first. For LLM workflows this is usually input/output tokens, not Lambda or Fargate runtime.
    - Include a sensitivity note for uncertain but material items, such as NAT gateway count, regional model multipliers, prompt caching, output length, container image pulls, or log volume.
 
 5. Provide examples and scaling projections.
-   - Include at least one concrete squad/team example using `X` people or a named squad size.
-   - Show how the cost scales when more squads share one environment.
+   - Include at least one concrete service, workload, or squad/team example using named inputs.
+   - Show how the cost scales with workload volume, tenants, users, squads, or environments as appropriate.
    - If per-squad environments are plausible, show that baseline multiplies per environment.
    - Use ranges for early estimates. Prefer p50/p95 language only when metrics exist.
-   - Keep arithmetic reproducible in the document.
+   - Keep arithmetic reproducible in the document, including intermediate values where totals are material.
 
 6. Document sources and next measurements.
    - List repository files/config used for the estimate.
@@ -52,7 +53,7 @@ Do not hard-code remembered prices. Always use current provider pricing for the 
    - Recommend Cost Explorer or billing tags for calibration after representative usage.
 
 7. Verify before finalising.
-   - Check arithmetic independently.
+   - Recalculate material totals independently with a deterministic tool, not mental arithmetic.
    - Check claims against repo config and implementation.
    - For documentation changes, run the repo's documentation generation/build checks when available.
    - If possible and useful, ask a subagent to review the estimate for factual, arithmetic, and overclaiming issues, then verify any changes locally.
@@ -91,6 +92,7 @@ Per-workflow cost model
 Squad examples
 Scale projection
 Exclusions and caveats
+Calculation method
 What to measure next
 Resources used
 ```
@@ -99,7 +101,7 @@ For a shorter conversational answer, give:
 
 - the dominant fixed cost;
 - the dominant variable cost;
-- a formula for squad size `X`;
+- a formula for service load, workflow volume, or squad size `X`;
 - one or two example totals;
 - the key assumptions and pricing sources.
 
@@ -136,6 +138,26 @@ fargate_cost =
   )
 ```
 
+## Calculation Mode Decision
+
+| Estimate shape | Calculation mode | Verification requirement |
+| --- | --- | --- |
+| Quick sanity check | Calculator, shell expression, Python, Node.js, `bc`, or similar | Show the formula and checked result. |
+| Multi-scenario estimate | Spreadsheet, table-first artefact, or small script | Keep assumptions editable and formulae visible for every scenario. |
+| Repository document | Deterministic tool plus documented intermediate values | Include enough rates, inputs, and formulae for another person or agent to reproduce totals. |
+| Finance handoff | Editable spreadsheet or checked calculation artefact | Avoid hidden arithmetic; expose assumptions, units, and scenario switches. |
+| Calculation tool unavailable | Formulae plus intermediate values only | Do not present exact-looking totals as final. |
+
+## Calculation Discipline
+
+Once inputs are chosen, arithmetic must be deterministic and reproducible.
+
+- For quick estimates, use a calculator, shell expression, Python, Node.js, `bc`, spreadsheet, or another deterministic tool to check the totals.
+- For multi-scenario estimates, scaling projections, or finance handoffs, prefer a spreadsheet or small script so assumptions and formulae remain editable.
+- For repository documents, include enough formulae, intermediate values, and source rates for another person or agent to reproduce the result.
+- Treat manual arithmetic as a draft only. Do not finalise material totals from mental arithmetic.
+- If a calculation tool is unavailable, say so and show the formulae plus intermediate values instead of presenting exact-looking totals.
+
 ## Quality Bar
 
 The estimate is not ready if:
@@ -145,15 +167,20 @@ The estimate is not ready if:
 - fixed baseline and variable usage are blended together;
 - regional assumptions are unclear;
 - examples cannot be recalculated from the formulae;
+- material totals were not checked with a deterministic calculation tool;
 - the document implies measured precision when only estimates exist;
 - resources used are not listed.
 
 ## NEVER
 
-- Never use stale remembered prices when the user asked for current costs.
-- Never blend fixed environment baseline into per-run workflow cost; show both layers separately.
-- Never present a rough estimate as measured chargeback or production telemetry.
-- Never ignore region, geography inference profile, marketplace, or private-offer differences.
-- Never price only model tokens when the architecture has material fixed costs such as NAT gateways, load balancers, long-lived compute, or log ingestion.
-- Never scale fixed baseline linearly by squad unless each squad has its own environment.
+- Never use stale remembered prices when the user asked for current costs; cloud and model prices change too often for memory to be reliable.
+- Never use AWS calculator defaults without checking assumptions; defaults can silently include usage, support, region, or architecture choices that do not match the system.
+- Never apply discounts, free tier, credits, private offers, Savings Plans, or reserved capacity unless they are explicitly in scope; otherwise the estimate stops being a public-rate baseline.
+- Never treat Cost Explorer, CUR, or billing exports as a substitute for unit-rate modelling before representative usage exists; billing data calibrates the model after real traffic.
+- Never blend fixed environment baseline into per-run workflow cost; doing so makes both scaling and optimisation decisions misleading.
+- Never present a rough estimate as measured chargeback or production telemetry; planning models should not imply observed precision.
+- Never ignore region, geography inference profile, marketplace, or private-offer differences; these can change both infrastructure and model token rates materially.
+- Never price only model tokens when the architecture has material fixed costs such as NAT gateways, load balancers, long-lived compute, or log ingestion; the baseline may dominate early usage.
+- Never scale fixed baseline linearly by squad unless each squad has its own environment; shared environments amortise fixed cost differently.
 - Never hide uncertainty in a single exact-looking total; use ranges, assumptions, and sensitivity notes.
+- Never rely on mental arithmetic for material totals; calculation errors are easy to miss and hard for readers to audit.
