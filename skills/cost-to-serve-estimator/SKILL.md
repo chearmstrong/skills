@@ -29,6 +29,7 @@ Do not hard-code remembered prices. Always use current provider pricing for the 
 3. Gather current pricing.
    - Use the pricing-source hierarchy below. Do not substitute remembered prices for current source checks.
    - Capture the exact region or geography profile. Separate regional infrastructure prices from global/base token prices when they differ.
+   - Normalise unit rates before calculating, and name variables with the unit basis, such as `cost_per_1m_tokens`, `cost_per_gb_second`, or `cost_per_vcpu_hour`.
    - Record publication dates or "accessed on" dates where available.
    - Note discounts and exclusions explicitly: private offers, Savings Plans, reserved capacity, free tier, credits, support, tax, data transfer, CI, and SaaS subscriptions.
 
@@ -86,10 +87,10 @@ For a written estimate or repo document, prefer these sections:
 ```text
 Purpose / Position
 Current model or workflow routing assumption
-Unit rates used
+Unit rates used, including denominators
 Fixed environment baseline
 Per-workflow cost model
-Squad examples
+Service, workload, or squad examples
 Scale projection
 Exclusions and caveats
 Calculation method
@@ -111,30 +112,34 @@ Use explicit formulae where they fit the system:
 
 ```text
 llm_cost =
-  input_tokens / 1_000_000 * input_token_rate
-  + output_tokens / 1_000_000 * output_token_rate
+  input_tokens / 1_000_000 * input_cost_per_1m_tokens
+  + output_tokens / 1_000_000 * output_cost_per_1m_tokens
 
 monthly_variable_cost =
-  people * weeks_per_month * (
-    weekly_workflow_a_per_person * workflow_a_cost
-    + weekly_workflow_b_per_person * workflow_b_cost
+  users_or_people * weeks_per_month * (
+    weekly_workflow_a_runs_per_person * workflow_a_cost_per_run
+    + weekly_workflow_b_runs_per_person * workflow_b_cost_per_run
   )
 
 monthly_total =
-  fixed_environment_baseline
+  monthly_fixed_environment_baseline
   + monthly_variable_cost
 ```
+
+Normalise provider token prices to the formula denominator before calculating.
+If a provider quotes cost per 1,000 tokens, convert it to cost per 1,000,000
+tokens or change both the divisor and variable names to match the quoted unit.
 
 For AWS Lambda and ECS/Fargate:
 
 ```text
 lambda_compute_cost =
-  duration_seconds * memory_gb * gb_second_rate
+  duration_seconds * memory_gb * cost_per_gb_second
 
 fargate_cost =
   runtime_hours * (
-    vcpu_count * vcpu_hour_rate
-    + memory_gb * memory_gb_hour_rate
+    vcpu_count * cost_per_vcpu_hour
+    + memory_gb * cost_per_gb_hour
   )
 ```
 
@@ -163,6 +168,7 @@ Once inputs are chosen, arithmetic must be deterministic and reproducible.
 The estimate is not ready if:
 
 - current pricing was not checked;
+- unit rates do not state their denominator or billing unit;
 - model routing is guessed rather than sourced from config;
 - fixed baseline and variable usage are blended together;
 - regional assumptions are unclear;
@@ -174,6 +180,7 @@ The estimate is not ready if:
 ## NEVER
 
 - Never use stale remembered prices when the user asked for current costs; cloud and model prices change too often for memory to be reliable.
+- Never use generic rate variables such as `input_token_rate` when the formula depends on a specific unit; make the denominator visible in the variable name.
 - Never use AWS calculator defaults without checking assumptions; defaults can silently include usage, support, region, or architecture choices that do not match the system.
 - Never apply discounts, free tier, credits, private offers, Savings Plans, or reserved capacity unless they are explicitly in scope; otherwise the estimate stops being a public-rate baseline.
 - Never treat Cost Explorer, CUR, or billing exports as a substitute for unit-rate modelling before representative usage exists; billing data calibrates the model after real traffic.
