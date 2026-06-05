@@ -1,13 +1,13 @@
 ---
 name: manual-review-comment-export
-description: "Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the `- path:line` plus quoted-comment format for the review-comments skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested."
+description: "Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the portable `- path:line` plus quoted-comment hand-off format. Produces review-comments-ready feedback without requiring any specific consumer skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested."
 ---
 
 # Manual Review Comment Export
 
 ## Overview
 
-Produce a read-only senior engineering review of current repository changes, then export only line-anchored actionable comments in the compact format consumed by the `review-comments` skill. The output is designed to be pasted directly into a later `review-comments` run.
+Produce a read-only senior engineering review of current repository changes, then export only line-anchored actionable comments in the portable review feedback hand-off format. The output is designed to be consumed by any later workflow that accepts path/line plus quoted-comment feedback, including but not limited to `review-comments`.
 
 This is a manual export skill. Do not activate it for ordinary review requests unless the user explicitly asks for this skill, this output format, or review-comments-ready feedback.
 
@@ -59,6 +59,18 @@ If the repository has documented project-specific review rules, read them and ap
 - Prefer small, actionable suggestions over broad rewrites.
 - Mark severity inside the quoted comment only when it materially affects triage, for example `High:` or `Blocking:`.
 - Do not include an overall summary, verdict, risk section, test log, or command list in the final response.
+
+## Review Feedback Hand-Off
+
+Use the hand-off format as a stable data contract, not as a dependency on a
+particular consumer skill.
+
+- Include enough evidence in each quoted comment for a later agent or human to verify the concern without the full review narrative.
+- Preserve uncertainty explicitly. Use "please verify whether..." when the evidence is plausible but not conclusive.
+- Mark duplicates by underlying defect, not by similar wording. If two locations expose the same root issue, prefer one comment that names the wider impact.
+- When the right action is documentation or tests rather than production code, say that in the quoted comment.
+- When a comment is intentionally a challenge to existing docs or assumptions, make the caveat explicit: "If this behaviour is intentional, update the docs/tests instead."
+- Do not embed follow-up workflow instructions such as "run review-comments next"; the output should remain portable.
 
 ## Line Anchoring
 
