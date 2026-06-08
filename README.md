@@ -1,5 +1,7 @@
 # Agent Skills
 
+[![skills.sh](https://skills.sh/b/chearmstrong/skills)](https://skills.sh/chearmstrong/skills)
+
 Portable personal coding-agent skills shared from `~/.agents`.
 
 These skills are maintained as normal skill directories and can be copied or
