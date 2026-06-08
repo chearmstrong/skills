@@ -11,6 +11,31 @@ Use the plugin bundle when you want the skills namespaced and distributed
 together. Install individual skills when you want the simplest direct setup or
 when using an agent surface that does not support plugin marketplaces.
 
+## Skills CLI
+
+The cross-agent `skills` CLI from [skills.sh](https://www.skills.sh/) can
+install this repository directly from GitHub:
+
+```bash
+npx skills add chearmstrong/skills
+```
+
+To inspect available skills before installing:
+
+```bash
+npx skills add chearmstrong/skills --list
+```
+
+To install selected skills only:
+
+```bash
+npx skills add chearmstrong/skills --skill review-pr
+```
+
+Use this route when you want a portable CLI install across supported agents.
+Use the plugin routes below when you specifically want plugin namespacing or
+marketplace distribution.
+
 ## Claude Plugin Bundle
 
 For normal Claude Code use, add this repository as a plugin marketplace and

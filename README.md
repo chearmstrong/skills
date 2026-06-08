@@ -24,6 +24,7 @@ using an agent surface that does not support plugin marketplaces.
 | Use the whole bundle | Claude Code                               | Add this checkout as a Claude marketplace, then install `chearmstrong-skills`.  |
 | Use the whole bundle | GitHub Copilot CLI, VS Code Insiders      | Add this checkout as a Copilot marketplace, then install `chearmstrong-skills`. |
 | Use the whole bundle | Codex                                     | Add this checkout through a Codex marketplace entry.                            |
+| Use the whole bundle | Cross-agent CLI                           | Install through `skills.sh` with `npx skills add chearmstrong/skills`.          |
 | Use selected skills  | Codex, Claude Code, Copilot CLI, OpenCode | Symlink or copy individual directories from `skills/`.                          |
 
 ## Skills
@@ -55,8 +56,8 @@ git clone https://github.com/chearmstrong/skills.git
 cd skills
 ```
 
-See [Install Skills](docs/install.md) for platform-specific plugin and direct
-skill install instructions.
+See [Install Skills](docs/install.md) for `skills.sh`, platform-specific
+plugin, and direct skill install instructions.
 
 ## Validate Skills
 
