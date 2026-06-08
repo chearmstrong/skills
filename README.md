@@ -42,6 +42,7 @@ using an agent surface that does not support plugin marketplaces.
 | `manual-review-comment-export`     | Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the `- path:line` plus quoted-comment format for the review-comments skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested.                                                                                                                                                 |
 | `review-comments`                  | Address PR or code review comments. Use when given review comments to verify before fixing, research best practices with available documentation tools or official sources, and document whether each comment was valid, partially valid, or invalid.                                                                                                                                                                                                                  |
 | `review-pr`                        | Review a colleague's pull request or branch diff read-only. Use only when the user is reviewing someone else's PR, a PR URL/number, or another author's branch, and wants draft review comments without editing code.                                                                                                                                                                                                                                                  |
+| `supply-chain-impact-check`        | Triage external supply-chain advisories and compromise reports against a local repository. Use when asked whether a project is affected by an npm, package manager, build tool, dependency, lockfile, CI install path, native build hook, or software supply-chain incident, especially for read-only impact checks and mitigation recommendations across npm, Docker, Python, GitHub Actions, and public advisory sources.                                          |
 
 <!-- skills-table:end -->
 
@@ -73,6 +74,11 @@ Validate one skill directory:
 
 The script validates individual skill roots because `skills/` is a bundle
 directory, not a skill directory with its own `SKILL.md`.
+
+If npm registry access is unavailable, the script falls back to the local
+portable validator when it exists at
+`~/.agents/skills/skill-maintenance/scripts/validate_skills.py`. Set
+`SKILLS_FALLBACK_VALIDATOR` to use a different fallback validator path.
 
 ## More Documentation
 

@@ -3,13 +3,13 @@
   "owner": {
     "name": "Che Armstrong"
   },
-  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, commit messages, and review-comment workflows.",
+  "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, supply-chain impact checks, commit messages, and review-comment workflows.",
   "plugins": [
     {
       "name": "chearmstrong-skills",
       "source": "./",
       "displayName": "Che Armstrong Skills",
-      "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, commit messages, and review-comment workflows.",
+      "description": "Portable personal coding-agent skills for code review, maintainability, architecture checks, cost estimation, supply-chain impact checks, commit messages, and review-comment workflows.",
       "author": {
         "name": "Che Armstrong"
       },
@@ -22,6 +22,7 @@
         "code-review",
         "maintainability",
         "cost-estimation",
+        "supply-chain",
         "github"
       ],
       "category": "Developer Tools"
