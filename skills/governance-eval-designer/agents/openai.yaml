@@ -1,0 +1,4 @@
+interface:
+  display_name: "Governance Eval Designer"
+  short_description: "Repo-aware AI governance and eval design"
+  default_prompt: "Use $governance-eval-designer to design audit fields, evals, and rollout gates for this AI workflow."
