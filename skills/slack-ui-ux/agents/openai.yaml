@@ -1,0 +1,4 @@
+interface:
+  display_name: "Slack UI/UX"
+  short_description: "Design and review Slack app experiences"
+  default_prompt: "Design or review this Slack app interaction for clear UX, Block Kit patterns, and safe side effects."
