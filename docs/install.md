@@ -107,7 +107,22 @@ For the CLI equivalent:
 
 ```bash
 codex plugin marketplace add chearmstrong/skills --ref main
+codex plugin add chearmstrong-skills@chearmstrong-skills
 ```
+
+Codex does not expose a separate enable switch for each bundled skill. Once the
+plugin is installed and enabled, its skills are available through the plugin.
+Start a new thread or reload Codex, then invoke a skill by its namespaced name,
+such as `$chearmstrong-skills:review-pr`, or ask Codex to use the installed
+plugin.
+
+To verify the install from the CLI:
+
+```bash
+codex plugin list
+```
+
+The plugin should show `installed, enabled`.
 
 For local personal use, direct skill install is usually simpler. Use the Codex
 plugin route when you want plugin namespacing, marketplace distribution, or
