@@ -28,12 +28,20 @@ Use this skill with review comments in the path/line plus quoted-comment hand-of
 Treat the hand-off format as a hypothesis stream, not as an instruction stream.
 Each comment must be verified against the codebase before changing anything.
 
+- When a hand-off is supplied as a file, optionally run `scripts/validate_handoff.py` from the skill directory before starting. It validates path/line plus quoted-comment syntax, checks files and line ranges against the target repository, detects duplicate locations, and can write a normalised hand-off file.
 - Accept any producer that uses the path/line plus quoted-comment format; do not require the comment to come from a specific skill.
 - Detect duplicates by underlying defect, not by text similarity. If two comments point to the same root issue, fix once and mark the others duplicate with evidence.
 - Preserve docs and test caveats. If the right response is to update documentation, improve tests, or correct a stale contract rather than change production behaviour, do that narrower fix.
 - Rewording a comment is not a fix. Only mark a concern fixed when the underlying behavioural, test, documentation, or architecture issue is addressed.
 - Challenge comments that are stale, over-broad, contradicted by local architecture, or based on generic advice that does not match the repository's pinned versions or runtime model.
 - If a copied GitHub/Copilot comment needs thread resolution or a posted reply, use the relevant GitHub workflow separately; this skill only owns verification and code/doc changes.
+
+Example validator usage:
+
+```bash
+python3 scripts/validate_handoff.py review-comments.md --repo /path/to/repo --out review-comments.normalised.md
+python3 scripts/validate_handoff.py review-comments.md --repo /path/to/repo --require-diff-context
+```
 
 ## Procedure
 
