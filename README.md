@@ -4,8 +4,23 @@
 
 Portable personal coding-agent skills shared from `~/.agents`.
 
-These skills are maintained as normal skill directories and can be copied or
-symlinked into compatible agent skill folders.
+These skills are maintained as normal skill directories and can be installed,
+copied, or symlinked into compatible agent skill folders.
+
+## Recommended Install
+
+```bash
+npx skills add chearmstrong/skills
+```
+
+This installs the skills as normal user-level skills, which is the most
+predictable setup for Codex Desktop and CLI users.
+
+To install one selected skill:
+
+```bash
+npx skills add chearmstrong/skills --skill review-pr
+```
 
 ## Repository Contents
 
@@ -14,19 +29,21 @@ symlinked into compatible agent skill folders.
   `.claude-plugin/`.
 - A GitHub Copilot agent plugin bundle and marketplace, described by
   `.github/plugin/`.
-- A Codex marketplace at `.agents/plugins/marketplace.json`, pointing to the
-  Codex plugin package under `skills/`.
 
-Use the plugin bundle when you want the skills namespaced and distributed as a
-set. Install individual skills when you want the simplest direct setup or when
-using an agent surface that does not support plugin marketplaces.
+Use `npx skills add chearmstrong/skills` for the default direct install. Plugin
+bundles remain secondary routes for agent surfaces that already support them.
+
+Codex plugin/marketplace support has been removed for now because direct skill
+installation is simpler and more predictable across Codex Desktop and CLI. The
+skills themselves remain portable and can still be installed manually or via
+`npx skills add`.
 
 | Goal                 | Agents                                    | Method                                                                          |
 | -------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
-| Use the whole bundle | Claude Code                               | Add this checkout as a Claude marketplace, then install `chearmstrong-skills`.  |
-| Use the whole bundle | GitHub Copilot CLI, VS Code Insiders      | Add this checkout as a Copilot marketplace, then install `chearmstrong-skills`. |
-| Use the whole bundle | Codex                                     | Add this checkout as a Codex marketplace, then install `chearmstrong-skills`.   |
-| Use the whole bundle | Cross-agent CLI                           | Install through `skills.sh` with `npx skills add chearmstrong/skills`.          |
+| Use the whole bundle | Codex, Claude Code, Copilot CLI, OpenCode | Install through `skills.sh` with `npx skills add chearmstrong/skills`.          |
+| Use selected skills  | Codex, Claude Code, Copilot CLI, OpenCode | Install through `skills.sh` with `npx skills add chearmstrong/skills --skill review-pr`. |
+| Use plugin bundle    | Claude Code                               | Add this checkout as a Claude marketplace, then install `chearmstrong-skills`.  |
+| Use plugin bundle    | GitHub Copilot CLI, VS Code Insiders      | Add this checkout as a Copilot marketplace, then install `chearmstrong-skills`. |
 | Use selected skills  | Codex, Claude Code, Copilot CLI, OpenCode | Symlink or copy individual directories from `skills/`.                          |
 
 ## Skills
@@ -63,8 +80,8 @@ git clone https://github.com/chearmstrong/skills.git
 cd skills
 ```
 
-See [Install Skills](docs/install.md) for `skills.sh`, platform-specific
-plugin, and direct skill install instructions.
+See [Install Skills](docs/install.md) for `skills.sh`, secondary plugin routes,
+and manual install instructions.
 
 ## Validate Skills
 
@@ -97,8 +114,6 @@ portable validator when it exists at
 ## Notes
 
 - `SKILL.md` is the portable source of truth for each skill.
-- `skills/` is also the Codex plugin package, so plugin installs and direct
-  skill installs use the same source files.
 - Optional helper scripts live inside each skill's `scripts/` directory.
 - Product-specific metadata is optional and should not be required to use a skill.
 - `CLAUDE.md` is intentionally a symlink to `AGENTS.md` so agent instructions

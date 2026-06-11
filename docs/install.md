@@ -1,17 +1,15 @@
 # Install Skills
 
-Clone the repository:
+The recommended route is the direct `skills` CLI install:
 
 ```bash
-git clone https://github.com/chearmstrong/skills.git
-cd skills
+npx skills add chearmstrong/skills
 ```
 
-Use the plugin bundle when you want the skills namespaced and distributed
-together. Install individual skills when you want the simplest direct setup or
-when using an agent surface that does not support plugin marketplaces.
+This installs the skills as normal user-level skills, which is the most
+predictable setup for Codex Desktop and CLI users.
 
-## Skills CLI
+## Recommended Install
 
 The cross-agent `skills` CLI from [skills.sh](https://www.skills.sh/) can
 install this repository directly from GitHub:
@@ -32,9 +30,28 @@ To install selected skills only:
 npx skills add chearmstrong/skills --skill review-pr
 ```
 
-Use this route when you want a portable CLI install across supported agents.
-Use the plugin routes below when you specifically want plugin namespacing or
-marketplace distribution.
+Use this route when you want a portable CLI install across supported agents. It
+is the primary install path for Codex users.
+
+## Codex Plugin Support
+
+Codex plugin/marketplace support has been removed for now because direct skill
+installation is simpler and more predictable across Codex Desktop and CLI. The
+skills themselves remain portable and can still be installed manually or via
+`npx skills add`.
+
+## Secondary Install Methods
+
+Clone the repository when you want to develop skills locally or symlink/copy
+individual skill directories:
+
+```bash
+git clone https://github.com/chearmstrong/skills.git
+cd skills
+```
+
+Use the plugin routes below only when you specifically want plugin namespacing
+or marketplace distribution on an agent surface that supports it.
 
 ## Claude Plugin Bundle
 
@@ -91,44 +108,7 @@ Use the Agent Plugins view in the Extensions panel, or search for
 This uses `.github/plugin/marketplace.json` and `.github/plugin/plugin.json`.
 The plugin exposes the same skill directories under `skills/`.
 
-## Codex Plugin Bundle
-
-The `skills/.codex-plugin/plugin.json` file describes the Codex plugin bundle.
-Codex discovers local plugins through marketplaces, so this repository includes
-a marketplace file that points to `skills/`.
-
-To add this repository as a Codex marketplace from the Codex app:
-
-- Source: `chearmstrong/skills`
-- Git ref: `main`
-- Sparse paths: leave blank
-
-For the CLI equivalent:
-
-```bash
-codex plugin marketplace add chearmstrong/skills --ref main
-codex plugin add chearmstrong-skills@chearmstrong-skills
-```
-
-Codex does not expose a separate enable switch for each bundled skill. Once the
-plugin is installed and enabled, its skills are available through the plugin.
-Start a new thread or reload Codex, then invoke a skill by its namespaced name,
-such as `$chearmstrong-skills:review-pr`, or ask Codex to use the installed
-plugin.
-
-To verify the install from the CLI:
-
-```bash
-codex plugin list
-```
-
-The plugin should show `installed, enabled`.
-
-For local personal use, direct skill install is usually simpler. Use the Codex
-plugin route when you want plugin namespacing, marketplace distribution, or
-workspace sharing.
-
-## Direct Skill Install
+## Manual Install
 
 Symlink or copy the individual skill directories you want. Replace
 `<skill-name>` with a directory under `skills/`.
@@ -166,3 +146,31 @@ Codex through the direct-install path are available to OpenCode too.
 
 If a target directory already exists, remove or rename it before creating the
 symlink.
+
+To link every skill into the standard user-level skills directory, link each
+skill folder individually:
+
+```bash
+mkdir -p ~/.agents/skills
+for skill in skills/*; do
+  [ -d "$skill" ] || continue
+  [ -f "$skill/SKILL.md" ] || continue
+  ln -s "$(pwd)/$skill" "$HOME/.agents/skills/$(basename "$skill")"
+done
+```
+
+Do not symlink the parent `skills/` directory into `~/.agents/skills`; that can
+create `~/.agents/skills/skills/review-pr/SKILL.md`. The expected user-level
+shape is:
+
+```text
+~/.agents/skills/review-pr/SKILL.md
+~/.agents/skills/bug-hunting/SKILL.md
+```
+
+## Troubleshooting
+
+- Restart Codex Desktop after installing.
+- Start a new chat or thread.
+- Check that skill folders exist under `~/.agents/skills`.
+- Verify each skill folder contains `SKILL.md`.
