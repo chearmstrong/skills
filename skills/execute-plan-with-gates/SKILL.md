@@ -1,6 +1,6 @@
 ---
 name: execute-plan-with-gates
-description: Use only when the user explicitly asks to execute an implementation plan with gated or ungated phase controls, including whether to pause between phases, ask before commits, and ask before moving to the next phase. Do not use for generic plan execution unless the user mentions gates, gated mode, ungated mode, approvals, phase checkpoints, or commit permission.
+description: Use only when the user explicitly asks to execute an implementation plan with gated or ungated phase controls, including whether to pause between phases, ask before commits, ask before moving to the next phase, or choose execution=main, execution=subagent, or execution=hybrid. Do not use for generic plan execution unless the user mentions gates, gated mode, ungated mode, approvals, phase checkpoints, commit permission, or delegated/sub-agent execution.
 ---
 
 # Execute plan with gates
@@ -31,7 +31,7 @@ Other skills may be used only for specialist support, such as:
 
 Do not delegate the overall plan execution workflow to another plan-execution skill.
 
-Do not use another skill if doing so would override this skill’s gated or ungated behaviour.
+Do not use another skill if doing so would override this skill’s gated, ungated, or execution-mode behaviour.
 
 This skill’s rules take precedence over any supporting skill.
 
@@ -39,7 +39,7 @@ If another skill conflicts with this one:
 
 1. Follow this skill.
 2. Mention the conflict briefly.
-3. Continue using this skill’s gated or ungated workflow.
+3. Continue using this skill’s gated, ungated, and execution-mode workflow.
 
 ## Related skills
 
@@ -56,23 +56,32 @@ Do not call or rely on `executing-plans` for the main workflow once this skill i
 
 ## Supported modes
 
-The user may specify the mode in natural language or with a flag-like instruction.
+The user may specify the approval mode and execution mode in natural language or with flag-like instructions.
 
 Examples:
 
 - `mode=gated`
-- `mode=gated peer_review=subagent`
+- `mode=gated execution=subagent`
 - `gated`
 - `with gates`
 - `approval gated`
 - `pause after each phase`
 - `mode=ungated`
+- `mode=ungated execution=hybrid`
 - `ungated`
 - `without gates`
 - `continuous`
 - `do not pause after each phase`
 
 If the user does not specify a mode, default to `gated`.
+
+The user may also specify who should perform implementation work:
+
+- `execution=main`
+- `execution=subagent`
+- `execution=hybrid`
+
+If the user does not specify an execution mode, default to `execution=main`.
 
 ## Initial behaviour
 
@@ -90,9 +99,10 @@ Before implementing anything:
 5. State which mode you are using:
    - `gated`
    - `ungated`
-   Also state which peer review mode is active:
-   - `peer_review=manual`
-   - `peer_review=subagent`
+   Also state which execution mode is active:
+   - `execution=main`
+   - `execution=subagent`
+   - `execution=hybrid`
 6. Ask for permission before starting implementation.
 
 Do not begin code changes until the user confirms.
@@ -135,24 +145,43 @@ After each phase or logical implementation chunk:
 4. Run broader checks before final completion where practical.
 5. Do not claim tests passed unless they were actually run.
 
-## Peer review expectations
+## Execution mode expectations
 
-At the start of the workflow, determine the peer review mode:
+At the start of the workflow, determine the execution mode:
 
-- `peer_review=manual`
-- `peer_review=subagent`
+- `execution=main`
+- `execution=subagent`
+- `execution=hybrid`
 
-If the user invokes this skill with `peer_review=subagent`, or explicitly authorises delegated or parallel agent work for peer-review passes, that is explicit authorisation to use sub-agents for peer review when they are available and appropriate.
+If the user invokes this skill with `execution=subagent` or `execution=hybrid`, or explicitly authorises delegated or parallel agent work, that is explicit authorisation to use sub-agents for scoped implementation work when they are available and appropriate.
 
-Default to `peer_review=manual` unless the user explicitly asks for sub-agent, delegated, or parallel peer review work.
+Default to `execution=main` unless the user explicitly asks for sub-agent, delegated, or parallel implementation work.
+
+Execution modes:
+
+- `execution=main`: the main thread implements, reviews, verifies, and handles gates.
+- `execution=subagent`: sub-agents implement scoped phases or chunks; the main thread reviews diffs, assesses verification, handles deviations, and owns all gate decisions.
+- `execution=hybrid`: the main thread implements sensitive, shared, or high-risk parts; sub-agents handle bounded independent chunks; the main thread integrates the work and owns all gate decisions.
+
+Sub-agents may perform implementation work only when the task can be scoped safely. Do not use sub-agents for changes that require continuous shared context, unclear ownership, fragile migrations, or risky cross-cutting edits unless the user explicitly confirms that trade-off.
+
+If the selected execution mode requires sub-agents but sub-agents are unavailable, stop and ask whether to continue with `execution=main`.
+
+The main thread always owns:
+
+- user-facing checkpoint summaries
+- final diff review
+- verification assessment
+- plan deviation decisions
+- gate decisions
+- commit decisions
 
 After each meaningful phase or logical chunk:
 
-1. Perform a peer-review style pass.
-2. In `peer_review=subagent` mode, use a sub-agent for the peer-review pass when sub-agents are available and the review can be scoped safely.
-3. In `peer_review=manual` mode, perform the peer-review pass directly or use a supporting code-review skill if available and appropriate.
-4. If a sub-agent is not used in `peer_review=subagent` mode, state why in the checkpoint summary.
-5. Review for:
+1. Perform a peer-review style pass in the main thread.
+2. If specialist review would materially improve confidence, use a supporting code-review skill or sub-agent review only when it can be scoped safely.
+3. If a sub-agent was expected by the selected execution mode but was not used, state why in the checkpoint summary.
+4. Review for:
    - correctness
    - missed edge cases
    - test coverage
@@ -160,14 +189,14 @@ After each meaningful phase or logical chunk:
    - unnecessary complexity
    - consistency with the plan
    - consistency with existing code patterns
-6. Classify findings as:
+5. Classify findings as:
    - blocking
    - non-blocking
    - follow-up
-7. Fix blocking findings before proceeding where practical.
-8. Do not repeatedly re-review non-blocking findings.
-9. Apply the review loop guard.
-10. Summarise any remaining non-blocking findings.
+6. Fix blocking findings before proceeding where practical.
+7. Do not repeatedly re-review non-blocking findings.
+8. Apply the review loop guard.
+9. Summarise any remaining non-blocking findings.
 
 ## Review loop guard
 
@@ -202,7 +231,7 @@ For each phase or logical implementation chunk:
 After 2 review/fix cycles:
 
 - If blocking issues remain, stop and ask the user how to proceed.
-- If only non-blocking issues remain, summarise them and move to the checkpoint or next phase according to the selected mode.
+- If only non-blocking issues remain, summarise them and move to the checkpoint or next phase according to the selected approval mode.
 - Do not start a third review/fix cycle unless the user explicitly asks.
 
 ## Gated mode
@@ -231,7 +260,7 @@ After completing each phase:
    - files touched
    - tests/checks run
    - review/fix cycles run
-   - peer review mode and whether a sub-agent was used
+   - execution mode and whether sub-agents were used
    - blocking issues found and fixed
    - non-blocking issues left as follow-ups
    - risks or follow-ups
@@ -261,8 +290,8 @@ Verified:
 
 Review status:
 - Review/fix cycles run: 1
-- Peer review mode: ...
-- Sub-agent used: yes | no
+- Execution mode: ...
+- Sub-agents used: yes | no
 - Blocking findings fixed: ...
 - Non-blocking follow-ups: ...
 
@@ -379,7 +408,7 @@ When finished, provide:
 9. Suggested next steps.
 10. Review loop status:
     - number of review/fix cycles run
-    - peer review mode and whether a sub-agent was used
+    - execution mode and whether sub-agents were used
     - blocking findings fixed
     - non-blocking findings left as follow-ups
 
@@ -387,6 +416,8 @@ When finished, provide:
 
 - Gated mode = pause after each phase and ask before commit/proceed.
 - Ungated mode = continue through the plan, but still verify and review.
+- Execution mode controls who performs implementation work: main thread, sub-agents, or a hybrid.
+- The main thread always owns final review, verification assessment, and gate decisions.
 - This skill controls the workflow.
 - Supporting skills may help, but must not override this skill.
 - Never delegate the main workflow to another plan-execution skill.
