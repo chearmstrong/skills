@@ -39,6 +39,26 @@ Prioritise:
 
 When a repo has a domain subproject with decision logs, validators, reviews, or staged gates, inspect it as a concrete example before generalising.
 
+## Evidence Conflict Tie-Breaker
+
+When evidence sources conflict, apply this order and record the conflict explicitly:
+- Runtime evidence first: prefer recent traces, audit records, and executed validator outputs over prose docs.
+- Policy intent second: if a signed-off policy artefact with version or effective date conflicts with runtime behaviour, treat it as intended behaviour and flag implementation drift.
+- Validation contract third: prefer current schema and validator definitions over prompt text or examples.
+- Approval reality fourth: prefer captured approval records over claimed approval paths in docs.
+
+If conflicts remain unresolved, return a bounded recommendation with an evidence-conflict note instead of asserting repo certainty.
+
+## Sparse-Repo Fallback
+
+If artefacts are present but thin, do a minimum viable pass before giving broad recommendations:
+1. Read one product context source (`README*`, `docs/**`, or runbook) to capture workflow purpose.
+2. Inspect one concrete write path and one concrete control path (validator, policy check, or CI gate).
+3. Produce a provisional boundary map with unknowns explicitly marked as evidence gaps.
+4. Recommend only low-regret controls plus a short evidence collection plan for the next pass.
+
+Do not infer hidden approval paths, validators, or rollout gates from naming conventions alone.
+
 ## Boundary Map
 
 Before proposing controls, identify:
@@ -57,8 +77,9 @@ If any boundary is unclear, mark it as an evidence gap instead of guessing.
 2. Summarise the workflow boundary in operational terms: read, decide, validate, approve, write, observe.
 3. Recommend audit fields by extending or normalising existing records or schemas first. Do not invent a parallel artefact if the repo already has one.
 4. Design the narrowest useful offline eval slice: one workflow, 10-30 representative cases unless the repo already has a better dataset, clear pass/fail scoring, and a release gate.
-5. Define rollout controls: ship gate, pause gate, widen gate, handoff conditions, and blocked actions.
-6. Return compact templates only when they help the user implement or document the design. If producing a concrete template, first read `references/templates.md`; otherwise do not load it.
+5. Apply SABRE to eval and rollout gates so aggregate scores cannot hide risky behaviour: slices, actions, blocked failures, rates, and escalation.
+6. Define rollout controls: ship gate, pause gate, widen gate, handoff conditions, and blocked actions.
+7. Return compact templates only when they help the user implement or document the design. If producing a concrete template, first read `references/templates.md`; otherwise do not load it.
 
 ## Request Routing
 
@@ -94,7 +115,7 @@ Never require storage of raw secrets, unnecessary personal data, full prompts co
 
 ## Eval Harness Guidance
 
-For eval requests, force the answer into:
+For eval requests, default the answer to:
 - Narrow first slice: one workflow boundary and one action class.
 - Dataset buckets: happy path, known hard cases, policy boundary, missing context, stale/contradictory evidence, validator failure, approval escalation.
 - Scoring dimensions: task success, evidence grounding, schema validity, policy compliance, correct refusal/escalation, approval evidence completeness, write safety.
@@ -114,6 +135,18 @@ Risk-class routing:
 | Approval-gated write | Support reply draft, ticket update, internal agent action | Deterministic validation before approval, approver evidence, bypass logging, final write trace |
 | Autonomous external action | Message send, workflow dispatch, PR action, database mutation | Dry-run/replay, idempotency key, zero unsafe writes, pause owner, staged widening |
 
+## SABRE Gate Review
+
+Use SABRE when designing or critiquing eval plans, release gates, rollout gates, or approval rules. It is a compact check to prevent a strong aggregate score from hiding unsafe workflow slices.
+
+- Slices: name the risky case groups separately from the total score, such as policy boundary, missing evidence, stale context, high-severity, regulated customer, security/privacy, validator failure, or duplicate write.
+- Actions: score the action contract, not just response quality. Separate draft, ask, escalate, refuse, approve, write, trigger, and block decisions where they differ.
+- Blocked failures: define failures that override averages, such as unsafe write, approval bypass, unauthorised destination, sensitive data exposure, unrecoverable schema error, unsupported claim in a critical path, or non-idempotent duplicate action.
+- Rates: give exact formulae, denominators, sample windows, and thresholds. Prefer metrics such as `correct_abstentions / cases_labelled_ask_escalate_or_refuse`, `passing_cases_in_slice / labelled_cases_in_slice`, and `unsafe_actions / total_actions`.
+- Escalation: state human-review, pause, rollback, and eval-backlog rules, including who owns review and how quickly failed cases become new eval cases.
+
+When using SABRE, do not let a weighted or aggregate score pass the gate unless critical slices, zero-tolerance failures, and human-review rules also pass.
+
 ## Rollout Controls
 
 Define controls in operational language:
@@ -125,10 +158,12 @@ Define controls in operational language:
 
 Tie each gate to deterministic signals where possible. Use confidence only as a routing hint, never as the sole reason to write or bypass approval.
 
+Re-use the failure taxonomy from Eval Harness + SABRE so release and rollout gates do not diverge.
+
 Use these gate examples as calibration, not universal thresholds:
-- Ship gate: offline eval passes the narrow slice, all deterministic validators pass, zero-tolerance failures are zero, and approval evidence is captured for every gated action.
-- Pause gate: any unsafe write, approval bypass, repeated validator outage, material unsupported claim, or incident tied to the workflow halts widening and routes to the owner.
-- Widen gate: current scope has measured outcomes, no open zero-tolerance failures, reviewed false positives/negatives, and the next scope does not add unvalidated write permissions.
+- Ship gate: narrow-slice eval passes, deterministic validators pass, and required approval evidence is present.
+- Pause gate: any blocked-failure event (for example unsafe write or approval bypass) halts widening and routes to the owner.
+- Widen gate: current scope outcomes are stable, blocked failures remain at zero, and the next scope adds no unvalidated write permissions.
 
 ## Never Do
 
