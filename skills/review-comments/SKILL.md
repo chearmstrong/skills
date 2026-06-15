@@ -1,6 +1,6 @@
 ---
 name: review-comments
-description: Address PR or code review comments supplied in a portable path/line plus quoted-comment hand-off format. Use when given review feedback from manual exports, GitHub UI, Copilot, subagents, or humans to verify before fixing, research best practices with official sources where needed, and document whether each comment was valid, partially valid, duplicate, stale, or invalid.
+description: Address PR or code review comments supplied in a portable path/line plus quoted-comment hand-off format. Use when given review feedback from manual exports, GitHub UI, Copilot, subagents, humans, or a requested review-comment workflow to verify before fixing, research best practices with official sources where needed, and document whether each comment was valid, partially valid, duplicate, stale, or invalid.
 ---
 
 # Review Comments
@@ -10,6 +10,10 @@ description: Address PR or code review comments supplied in a portable path/line
 Address review comments with rigour — verify before fixing, research where needed, document decisions.
 
 **Core principle:** Verify validity first. Research before implementing. Document every decision.
+
+When comments are part of a broader review-comment workflow, this skill owns the verification, fix, test, and verdict step. Portable exports may come from any source that preserves the path/line plus quoted-comment format. GitHub/Copilot thread discovery, replies, and resolution stay with the relevant GitHub workflow or the user when no GitHub workflow is available.
+
+If the user explicitly asks for the review-comment workflow, or if comments are being handed between export, verification, and GitHub resolution steps, read `references/review-comment-workflow.md` before proceeding.
 
 ## Input Format
 

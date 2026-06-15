@@ -9,6 +9,8 @@ description: Inspect, fix, and resolve GitHub Copilot automated pull request rev
 
 Use this skill to work through GitHub Copilot automated PR review comments with thread-aware context. Treat `gh pr view --comments` as a lightweight summary only; use the bundled GraphQL helpers whenever inline review threads, resolution state, or thread IDs matter.
 
+When Copilot comments need deeper local verification, batching, or hand-off between agents, convert the relevant thread comments to the portable review-comment format and use a verification pass before resolving threads. If a dedicated review-comment skill is installed, use it; otherwise verify each comment manually with the same verdicts used below.
+
 ## Workflow
 
 1. Resolve the PR.

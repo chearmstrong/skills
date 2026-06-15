@@ -7,9 +7,11 @@ description: "Use only when the user explicitly invokes this manual skill or ask
 
 ## Overview
 
-Produce a read-only senior engineering review of current repository changes, then export only line-anchored actionable comments in the portable review feedback hand-off format. The output is designed to be consumed by any later workflow that accepts path/line plus quoted-comment feedback, including but not limited to `review-comments`.
+Produce a read-only senior engineering review of current repository changes, then export only line-anchored actionable comments in the portable review feedback hand-off format. The output is designed to be consumed by any later workflow that accepts path/line plus quoted-comment feedback.
 
 This is a manual export skill. Do not activate it for ordinary review requests unless the user explicitly asks for this skill, this output format, or review-comments-ready feedback.
+
+When the user asks for the broader review-comment workflow, use this skill only for the export step. A later agent or human may pass the exported block to a verification workflow; do not include that instruction inside the exported block.
 
 ## Workflow
 

@@ -134,7 +134,21 @@ Before making recommendations, inspect:
 
 Do not introduce a new style if the repo already has a clear convention.
 
-### 6. Use interface depth as one lens
+### 6. Check for maintenance drift
+
+Maintainability problems often appear when code, docs, tests, and agent guidance describe different versions of the same behaviour.
+
+When a candidate changes or depends on domain behaviour, workflow steps, architectural boundaries, generated outputs, prompts, schemas, or quality gates, check whether any related artefacts may need to be updated:
+
+- User-facing or operator documentation
+- Architecture docs, decision records, or context files
+- Repo-local agent instructions or skills
+- Evals, golden files, fixtures, or prompt-quality checks
+- CLI commands, scripts, templates, or documented paved roads
+
+Do not require updates for every refactor. Note drift only when the code change would make an existing artefact misleading, stale, or incomplete.
+
+### 7. Use interface depth as one lens
 
 Do not turn the review into an architecture redesign. Use deep/shallow module language only when it explains a practical maintainability problem.
 
@@ -195,6 +209,7 @@ For each candidate, include:
 - **Why now** — why this is worth doing
 - **Risk** — low/medium/high
 - **Guardrails** — tests/checks needed before changing it
+- **Drift scan** — docs, ADRs, repo instructions/skills, evals, or paved-road artefacts that may need updates
 - **Estimated scope** — small/medium/large
 - **Suggested first step** — the smallest safe next move
 
@@ -213,6 +228,7 @@ Use this format:
 - **Why now:** Reduces drift between create/update behaviour.
 - **Risk:** Low
 - **Guardrails:** Add route-level tests for current valid/invalid request behaviour.
+- **Drift scan:** No docs, ADRs, repo instructions, or evals appear affected.
 - **Estimated scope:** Small
 - **Suggested first step:** Add characterization tests before extraction.
 ```
