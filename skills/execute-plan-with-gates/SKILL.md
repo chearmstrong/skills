@@ -147,56 +147,34 @@ After each phase or logical implementation chunk:
 
 ## Execution mode expectations
 
-At the start of the workflow, determine the execution mode:
+Default to `execution=main` unless the user explicitly asks for sub-agent, delegated, or parallel implementation work. If the user invokes `execution=subagent` or `execution=hybrid`, that is explicit authorisation to use sub-agents for safely scoped implementation work.
 
-- `execution=main`
-- `execution=subagent`
-- `execution=hybrid`
+| Mode | Use when | Main thread owns |
+| --- | --- | --- |
+| `execution=main` | Work is tightly coupled, high-risk, or too small to delegate. | Implementation, review, verification, gates, and commits. |
+| `execution=subagent` | The plan can be split into bounded chunks with clear ownership. | User-facing checkpoints, final diff review, verification assessment, deviations, gates, and commits. |
+| `execution=hybrid` | Some chunks are safe to delegate, but sensitive or shared code needs direct handling. | Integration, shared-risk work, final review, deviations, gates, and commits. |
 
-If the user invokes this skill with `execution=subagent` or `execution=hybrid`, or explicitly authorises delegated or parallel agent work, that is explicit authorisation to use sub-agents for scoped implementation work when they are available and appropriate.
+Use sub-agents only when ownership can be stated precisely. Avoid delegation for continuous shared context, unclear ownership, fragile migrations, or risky cross-cutting edits unless the user explicitly confirms that trade-off.
 
-Default to `execution=main` unless the user explicitly asks for sub-agent, delegated, or parallel implementation work.
+| Sub-agent pattern | Allowed when | Default |
+| --- | --- | --- |
+| Sequential delegation | Ownership overlaps, a supporting skill recommends one implementer at a time, or integration risk is unclear. | Use this unless parallel safety is obvious. |
+| Parallel delegation | Write scopes are disjoint, integration surface is small, and the main thread can review and integrate safely. | Use only for clearly independent work sets. |
+| No delegation | Sub-agents are unavailable, the task cannot be scoped safely, or delegation would obscure gate ownership. | Stop and ask whether to continue with `execution=main` when sub-agents were requested. |
 
-Execution modes:
+## Checkpoint review rules
 
-- `execution=main`: the main thread implements, reviews, verifies, and handles gates.
-- `execution=subagent`: sub-agents implement scoped phases or chunks; the main thread reviews diffs, assesses verification, handles deviations, and owns all gate decisions.
-- `execution=hybrid`: the main thread implements sensitive, shared, or high-risk parts; sub-agents handle bounded independent chunks; the main thread integrates the work and owns all gate decisions.
+After each phase or logical chunk, run the same checkpoint discipline regardless of mode:
 
-Sub-agents may perform implementation work only when the task can be scoped safely. Do not use sub-agents for changes that require continuous shared context, unclear ownership, fragile migrations, or risky cross-cutting edits unless the user explicitly confirms that trade-off.
+1. Review the implementation against the plan and existing code patterns.
+2. Check correctness, edge cases, test coverage, security, unnecessary complexity, and scope creep.
+3. Classify findings as `blocking`, `non-blocking`, or `follow-up`.
+4. Fix blocking findings where practical, then re-run the relevant verification.
+5. Apply the review loop guard.
+6. Summarise files touched, checks run, review/fix cycles, execution mode, sub-agent use, fixed blockers, remaining follow-ups, and risks.
 
-If the selected execution mode requires sub-agents but sub-agents are unavailable, stop and ask whether to continue with `execution=main`.
-
-The main thread always owns:
-
-- user-facing checkpoint summaries
-- final diff review
-- verification assessment
-- plan deviation decisions
-- gate decisions
-- commit decisions
-
-After each meaningful phase or logical chunk:
-
-1. Perform a peer-review style pass in the main thread.
-2. If specialist review would materially improve confidence, use a supporting code-review skill or sub-agent review only when it can be scoped safely.
-3. If a sub-agent was expected by the selected execution mode but was not used, state why in the checkpoint summary.
-4. Review for:
-   - correctness
-   - missed edge cases
-   - test coverage
-   - security concerns
-   - unnecessary complexity
-   - consistency with the plan
-   - consistency with existing code patterns
-5. Classify findings as:
-   - blocking
-   - non-blocking
-   - follow-up
-6. Fix blocking findings before proceeding where practical.
-7. Do not repeatedly re-review non-blocking findings.
-8. Apply the review loop guard.
-9. Summarise any remaining non-blocking findings.
+If a selected execution mode expected sub-agents but they were not used, explain why in the checkpoint summary.
 
 ## Review loop guard
 
@@ -248,32 +226,7 @@ Also use gated mode by default when no mode is specified.
 
 In gated mode, work one phase at a time.
 
-After completing each phase:
-
-1. Stop implementation.
-2. Review the phase.
-3. Run relevant verification.
-4. Perform a peer-review style pass.
-5. Apply the review loop guard.
-6. Summarise:
-   - what changed
-   - files touched
-   - tests/checks run
-   - review/fix cycles run
-   - execution mode and whether sub-agents were used
-   - blocking issues found and fixed
-   - non-blocking issues left as follow-ups
-   - risks or follow-ups
-7. State whether the phase is complete.
-8. Ask the user for permission to:
-   - commit the phase
-   - proceed to the next phase
-
-Do not proceed to the next phase until the user confirms.
-
-Do not commit unless the user explicitly gives permission.
-
-When asking for commit permission, propose a concise commit message.
+After each phase, stop implementation and run the checkpoint review rules. State whether the phase is complete, then ask for permission to commit the phase and proceed to the next phase. Do not proceed or commit until the user explicitly confirms. When asking for commit permission, propose a concise commit message.
 
 Example gated checkpoint response:
 
@@ -316,16 +269,18 @@ In ungated mode:
 1. Execute the plan continuously.
 2. Keep the work internally organised by phase.
 3. Do not pause after every phase for user approval.
-4. Still verify after each phase or logical chunk.
-5. Still perform peer-review style checks.
-6. Still apply the review loop guard.
-7. Stop only if:
-   - blocked
-   - the plan is ambiguous
-   - the implementation becomes unsafe
-   - a risky scope change is needed
-   - verification fails in a way that needs user input
-   - blocking review issues remain after 2 review/fix cycles
+4. Still run the checkpoint review rules after each phase or logical chunk.
+
+Stop in ungated mode only when:
+
+| Stop condition | Why it stops continuous execution |
+| --- | --- |
+| Blocked | The next step cannot be completed with available context or tools. |
+| Plan ambiguity | A reasonable assumption would risk implementing the wrong behaviour. |
+| Unsafe implementation | Continuing could create security, data-loss, deployment, or public-contract risk. |
+| Material scope change | The plan no longer fits the codebase or requirement. |
+| Verification needs user input | Failure cannot be classified or resolved safely without clarification. |
+| Blocking findings remain | The review loop guard reached its limit with unresolved blocking issues. |
 
 Commit behaviour in ungated mode:
 
@@ -362,6 +317,19 @@ update files
 fix stuff
 changes
 ```
+
+## Anti-patterns
+
+Never do these:
+
+| Anti-pattern | Why it is dangerous |
+| --- | --- |
+| Treat `ungated` as permission to skip verification or review. | Ungated only removes phase pauses; it does not remove quality gates. |
+| Treat `execution=subagent` as delegation of gate ownership. | The main thread still owns user-facing decisions, integration, verification assessment, commits, and deviations. |
+| Run parallel implementers on overlapping files or unclear ownership. | Merge conflicts are the small risk; inconsistent design and hidden behavioural drift are the real risk. |
+| Continue through material plan ambiguity. | Fast execution of the wrong plan is worse than a short clarification stop. |
+| Commit because a phase passed locally. | Commits require explicit user permission even in ungated mode. |
+| Let supporting skills override gated, ungated, or execution-mode behaviour. | Supporting skills can improve specialist work, but this skill owns the workflow contract. |
 
 ## Handling blockers
 
