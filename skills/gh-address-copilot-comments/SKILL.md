@@ -16,12 +16,14 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
 1. Resolve the PR.
    - Use the PR URL, repository plus number, or the current branch PR.
    - Confirm `gh auth status` before relying on CLI API calls.
-2. Fetch Copilot review context.
-   - Run `scripts/fetch_copilot_threads.py`.
+2. Fetch and group Copilot review context.
+   - Run `scripts/triage_copilot_threads.py` first when there may be multiple unresolved threads.
    - Pass `--repo owner/repo --pr N` when the PR is not the current branch.
    - Use `--all-authors` if the user wants all unresolved review threads, not only Copilot-like authors.
-3. Triage each unresolved thread.
-   - Classify as valid, partially valid, invalid, duplicate, outdated, or unclear.
+   - Use `scripts/fetch_copilot_threads.py` when raw thread JSON is needed for manual inspection or hand-off.
+3. Triage each unresolved thread group.
+   - Treat the grouping as a mechanical starting point, not a verdict.
+   - Classify each thread as valid, partially valid, invalid, duplicate, outdated, or unclear.
    - Read the referenced file and nearby code before changing anything.
    - Do not assume Copilot is correct; verify against the codebase, tests, and project rules.
 4. Implement focused fixes for valid comments.
@@ -40,6 +42,16 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
    - List fixed and resolved threads, fixed but left open threads, invalid comments, unclear comments, tests run, and residual risk.
 
 ## Helper Scripts
+
+### Triage Copilot Threads
+
+```bash
+scripts/triage_copilot_threads.py --repo owner/repo --pr 123
+```
+
+Use this before manual triage when several unresolved review threads exist. It wraps the fetch helper, groups selected threads by file and normalised comment text, prints thread IDs, representative excerpts, and suggested verification commands based on touched paths. Pass `--json` for machine-readable output, or `--input fetch-output.json` to group a previously fetched payload without another GitHub API call. When changing the helper, debugging its output, or consuming `--json` from another script, read `references/triage-helper.md`.
+
+The grouping is deliberately deterministic and conservative. It is only a triage aid: still inspect the referenced code and decide whether each thread is valid, duplicate, outdated, or unclear before making changes or resolving anything.
 
 ### Fetch Copilot Threads
 
