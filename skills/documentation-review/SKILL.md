@@ -1,6 +1,6 @@
 ---
 name: documentation-review
-description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, uses British English, and has no duplication or redundancy. Works with or without MCP; prefers Context7 / AWS docs MCP when enabled, otherwise web search and official docs. Use when reviewing documentation files, code comments, docstrings, or when documentation may be outdated. Applies to markdown files, README files, code comments, and docstrings.
+description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Works with or without MCP; prefers Context7 / AWS docs MCP when enabled, otherwise web search and official docs. Use when reviewing documentation files, code comments, docstrings, or when documentation may be outdated. Applies to markdown files, README files, code comments, and docstrings.
 ---
 
 # Documentation Review
@@ -80,7 +80,7 @@ Never:
 - Preserve duplicate setup instructions in multiple files.
 - Let generated output, screenshots, or examples remain after the source behaviour changed.
 - Cite a blog when official docs, pinned dependency metadata, or repository tests can answer the question.
-- Convert British English project prose to American English while editing nearby text.
+- Impose a different language or locale variant while editing nearby text; preserve the document or project's existing convention unless the user asks for a conversion.
 
 ## Output Shape
 

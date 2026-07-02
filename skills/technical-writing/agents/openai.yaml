@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical Writing"
+  short_description: "Review docs, blogs, and public writing"
+  default_prompt: "Use $technical-writing to review this draft for clarity, accuracy, structure, tone, and publication safety."

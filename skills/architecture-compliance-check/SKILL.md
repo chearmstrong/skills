@@ -58,7 +58,7 @@ Check these traps before approving or finishing work:
 - **DynamoDB:** preserve `LastEvaluatedKey` exactly; keep PK/SK immutable; treat GSIs as projections; use `Query` rather than `Scan` in hot paths; make retryable writes idempotent.
 - **CDK/IaC:** preserve construct IDs; call out replacements; keep least-privilege IAM; retain stateful data; document `cdk diff` output before deploy/PR when infrastructure changed.
 - **Portable skills:** keep `SKILL.md` as the source of truth; use only required frontmatter unless optional spec fields add value; keep product-specific files optional.
-- **Documentation:** use British English in new prose; preserve quoted API/log spelling; keep docs aligned with implementation rather than aspirational architecture.
+- **Documentation:** follow user, project, or publication language conventions; default to British English only when no stronger style is present; preserve quoted API/log spelling; keep docs aligned with implementation rather than aspirational architecture.
 
 ## Evidence Rules
 
