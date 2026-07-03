@@ -163,6 +163,44 @@ Use sub-agents only when ownership can be stated precisely. Avoid delegation for
 | Parallel delegation | Write scopes are disjoint, integration surface is small, and the main thread can review and integrate safely. | Use only for clearly independent work sets. |
 | No delegation | Sub-agents are unavailable, the task cannot be scoped safely, or delegation would obscure gate ownership. | Stop and ask whether to continue with `execution=main` when sub-agents were requested. |
 
+## Sub-agent review orchestration
+
+Use this section when `execution=subagent` or `execution=hybrid` and the plan can be split into bounded task slices with clear ownership.
+
+The main thread remains responsible for reading the plan, selecting the task slice, defining owned and out-of-scope files, deciding whether review findings are blocking, assessing verification, and handling gates, commits, and deviations.
+
+Before dispatching delegated work, read `references/subagent-review-prompts.md`. Do not load that reference for `execution=main`.
+
+| Situation | Review pattern |
+| --- | --- |
+| One tightly scoped main-thread task | Main self-review plus verification. |
+| Delegated implementation | Spec compliance review, then code-quality review. |
+| Cross-cutting delegated change | Add final integration review before checkpointing. |
+| Review finding changes design or touches new areas | Restart spec and quality review for the task. |
+| Review finding is narrow and local | Apply a narrow fix, then re-review only the prior finding and changed scope. |
+
+### Task status ledger
+
+Maintain a compact ledger during delegated execution:
+
+| Task | Implementation | Spec review | Quality review | Fixes | Verification | Gate |
+| --- | --- | --- | --- | --- | --- | --- |
+| Task 1 | DONE | APPROVED | APPROVED | none | passed | ready |
+
+Update the ledger at each checkpoint. In final responses, summarise the ledger instead of replaying every prompt.
+
+## Relationship to Superpowers
+
+If `subagent-driven-development` or a similar supporting skill also applies, this skill still owns the workflow when the user requested gates, approval checkpoints, commit permission, or execution-mode control.
+
+Borrow the implementer, spec-review, and code-quality review pattern, but keep this skill's gate behaviour:
+
+- pause when gated mode requires it
+- do not continue past approval checkpoints
+- do not commit without explicit permission
+- keep review/fix cycles bounded by this skill's review loop guard
+- keep the main thread responsible for final verification assessment and deviations
+
 ## Checkpoint review rules
 
 After each phase or logical chunk, run the same checkpoint discipline regardless of mode:
