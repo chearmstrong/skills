@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, or publication-safe technical content.
+description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
 ---
 
 # Technical Writing
@@ -9,7 +9,7 @@ Use this skill to improve technical writing without weakening technical accuracy
 
 ## First Pass
 
-1. Identify the writing mode: review, guide, rewrite, outline, or publication-safety pass.
+1. Identify the writing mode: review, guide, rewrite, outline, publication-safety pass, or publishing-readiness pass.
 2. Identify the audience: practitioner, maintainer, buyer, internal team, external reader, or mixed.
 3. Identify the source of truth: local repository files, linked docs, supplied draft, public references, or explicit user notes.
 4. Preserve facts, code identifiers, API names, log text, and quoted external wording exactly unless the user asks to change them.
@@ -21,6 +21,7 @@ Load references deliberately:
 
 - **Mandatory for any review of existing writing**: read `references/review-checklist.md` before reporting findings.
 - **Mandatory for public, external, customer-facing, conference, blog, or publication-safety work**: read `references/public-safety.md` before drafting or approving wording.
+- **Mandatory for posts or docs being prepared for publication, preview, scheduling, or launch**: read `references/publishing-readiness.md` before calling the piece ready to publish.
 - **Mandatory for structure, tone, rewrite, or style-guide questions**: read `references/style-guide.md` before making recommendations.
 
 Do not load unrelated references. For example, an internal ADR clarity pass does not need `public-safety.md` unless publication or disclosure risk is part of the request.
@@ -90,6 +91,8 @@ Useful external baselines include the Google Developer Documentation Style Guide
 ## Compact Scenarios
 
 Public blog review: load `review-checklist.md` and `public-safety.md`; prioritise unsafe disclosure, unsupported claims, benchmark caveats, and whether the story shares useful learning without exposing internal detail.
+
+Publishing-readiness pass: load `publishing-readiness.md` and `public-safety.md`; check front matter, generated metadata, preview-versus-production behaviour, scheduled visibility, analytics/CSP caveats, and remaining approval risk before saying the post is ready.
 
 Internal docs review: load `review-checklist.md`; prioritise source-of-truth accuracy, task order, prerequisites, and whether maintainers can act without reading implementation code.
 
