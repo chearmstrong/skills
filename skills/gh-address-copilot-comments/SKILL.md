@@ -23,6 +23,14 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
    - Use `--all-authors` if the user wants all unresolved review threads, not only Copilot-like authors.
    - Use `scripts/fetch_copilot_threads.py` when raw thread JSON is needed for manual inspection or hand-off.
    - When the user asks whether a comment is still valid, says another reviewer or Copilot raised the same point, or the thread history looks confusing, re-fetch with `--include-resolved --include-outdated` and compare against current code before drafting a new comment or fix.
+   - **Reconcile the UI before declaring the PR clear.** If the user says that the GitHub UI shows threads missing from the initial result, supplies `#discussion_r...` URLs, or says a resolved thread still appears open, run the unfiltered inventory below before acting on or dismissing any thread:
+
+     ```bash
+     scripts/fetch_copilot_threads.py --repo owner/repo --pr 123 --all-authors --include-resolved --include-outdated
+     ```
+
+     Compare the supplied URL with each `comments.nodes[].url` in the returned JSON, then use its parent thread ID and state. A supplied discussion URL is evidence that must be checked, not an instruction to resolve the thread. If the URL is absent from the complete inventory, report the discrepancy and do not claim that the UI thread is resolved, outdated, or unavailable without further GitHub evidence.
+   - Treat a filtered Copilot result as a selection for triage, not as proof that no unresolved review threads exist. State whether the final result came from the normal Copilot filter or the complete reconciliation inventory.
 3. Triage each thread group against current code.
    - Treat the grouping as a mechanical starting point, not a verdict.
    - Classify each thread as valid, partially valid, invalid, duplicate, already fixed, outdated, or unclear.
@@ -45,6 +53,7 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
 7. Re-fetch review state.
    - After fixes or replies, run the fetch helper again for the same PR to confirm which Copilot threads remain unresolved.
    - If resolved/outdated duplicate checks influenced the decision, include `--include-resolved --include-outdated` in the final check or state why it was not needed.
+   - When a thread was resolved, reconciled from a supplied URL, or the UI initially disagreed with the filtered result, use `--all-authors --include-resolved --include-outdated` for the final check. Confirm the target thread IDs explicitly; do not infer their state from the count of selected threads.
 8. Summarise outcomes.
    - List fixed and resolved threads, fixed but left open threads, invalid comments, duplicate or already-fixed comments, unclear comments, tests run, and residual risk.
 
@@ -89,6 +98,7 @@ The script calls GitHub GraphQL `resolveReviewThread` through `gh api graphql` a
 
 - Prefer read-only inspection until the user asks for fixes, but once a fix is applied for a Copilot thread, resolve that thread unless the user requested read-only/no-resolve behaviour.
 - Never act on a Copilot thread from stale local code; refresh to the PR head or report the stale checkout before deciding validity.
+- Never report “no remaining comments” from a filtered author query when the user has reported a UI/API mismatch or supplied discussion URLs; reconcile first or report that the state could not be verified.
 - Never resolve comments that are merely hidden, outdated, already fixed, duplicate, or inconvenient.
 - Do not resolve invalid comments silently; draft or post a rationale when useful.
 - Do not resolve unclear, invalid, duplicate, already-fixed, outdated, or partially addressed threads unless the user explicitly accepts the rationale and asks for resolution.
@@ -105,5 +115,6 @@ Verdict: valid | partially valid | invalid | duplicate | already fixed | outdate
 Action: fixed | replied | left open | resolved
 Verification: <command or not run>
 Thread state check: <fetch command/result or not run>
+Discovery: normal Copilot filter | complete reconciliation inventory | supplied URL not found
 Notes: <short rationale>
 ```

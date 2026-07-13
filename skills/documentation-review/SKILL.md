@@ -1,6 +1,6 @@
 ---
 name: documentation-review
-description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Works with or without MCP; prefers Context7 / AWS docs MCP when enabled, otherwise web search and official docs. Use when reviewing documentation files, code comments, docstrings, or when documentation may be outdated. Applies to markdown files, README files, code comments, and docstrings.
+description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Use when reviewing markdown, READMEs, code comments, docstrings, platform proposals, architecture spikes, or extraction inventories.
 ---
 
 # Documentation Review
@@ -59,6 +59,15 @@ Do not review a document evenly from top to bottom. Classify claims first, then 
 5. **Is the same fact stated in multiple places?**
    - Keep the canonical location.
    - Replace duplicates with links, or delete them if they will drift.
+
+## Platform Proposal Routing
+
+For a platform proposal, architecture spike, or extraction inventory, use `architecture-compliance-check` alongside this skill. Keep responsibilities separate:
+
+- **This skill:** readability, terminology, duplication, claim clarity, and whether a reader can safely act on the document.
+- **`architecture-compliance-check`:** verified-versus-proposed states, assumptions, external/vendor claims, boundary contracts, cross-document coherence, and handover for parallel slices.
+
+Do not repeat the architecture check in this review. Link the two outputs when both are needed, and resolve terminology or scope conflicts in the canonical document rather than maintaining parallel explanations.
 
 ## Documentation Traps
 

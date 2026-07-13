@@ -1,6 +1,6 @@
 ---
 name: architecture-compliance-check
-description: Verify architecture and implementation follow documented best practices, project patterns, and user rules. Check against project documentation, ensure no assumptions are made, and verify implementation matches documented patterns. Use when reviewing code, implementing features, making architectural decisions, or before committing changes.
+description: Verify architecture and implementation against documented patterns, project rules, and authoritative evidence. Use when reviewing code, making architectural decisions, drafting or reviewing platform proposals and architecture spikes, reconciling design documents, or before committing changes.
 ---
 
 # Architecture Compliance Check
@@ -67,6 +67,57 @@ Check these traps before approving or finishing work:
 - When using MCP tools, treat them as accelerators, not authority by themselves.
 - If evidence is missing, report "not documented" as the finding; do not fill the gap with assumption.
 - If the user explicitly authorises a new pattern, document the decision in the smallest appropriate place.
+
+## Platform-Spike Reviews
+
+Use this mode when reviewing or drafting a platform proposal, extraction inventory, architecture spike, or other document that mixes repository discovery with a future design. This is an evidence exercise, not an endorsement of the proposed direction.
+
+### Separate Evidence From Direction
+
+For every material claim, label it by its evidence state:
+
+| State | Meaning | Required treatment |
+| --- | --- | --- |
+| **Verified current state** | Proven by current code, configuration, tests, deployment artefacts, or authoritative internal documentation | Cite the evidence and distinguish observed behaviour from intended behaviour. |
+| **Proposed direction** | A design choice, candidate architecture, or future contract | State the owner, decision point, and the smallest validation needed before implementation. |
+| **Assumption** | A premise that is plausible but not yet evidenced | Add it to an assumption ledger; do not use it as an implementation constraint. |
+| **External claim** | A statement about a vendor, framework, service, maturity level, limit, cost, or compatibility | Verify it against an official, version-appropriate source and record the date/version checked. |
+
+Do not make a proposed design sound like current implementation, and do not turn an observed implementation detail into a recommended platform boundary without an explicit decision.
+
+### Assumption Ledger
+
+Include a compact ledger whenever unresolved assumptions could change scope, sequencing, ownership, risk, or a platform boundary.
+
+| Assumption | Why it matters | Evidence or owner | Decision/validation needed |
+| --- | --- | --- | --- |
+| [statement] | [impact] | [source or accountable person] | [smallest next check] |
+
+Keep assumptions concrete and testable. Do not use the ledger to catalogue every unknown; include only assumptions that could change a decision.
+
+### Cross-Document Check
+
+When a spike has more than one design document, check them together for:
+
+- inconsistent names for the same boundary, component, or contract;
+- a decision made in one document but represented as an open option in another;
+- incompatible ownership, tenancy, state, memory, idempotency, or observability assumptions;
+- duplicate scopes that could lead parallel engineers to implement competing shapes; and
+- vendor claims that are only cited, caveated, or versioned in one document.
+
+Report the conflicting document sections and propose the smallest wording or decision change that restores one coherent model.
+
+### Handover For Parallel Slices
+
+For a document intended to help engineers pick up separate slices, add a short handover section for each slice:
+
+- **Boundary and goal:** the capability and what it must not own.
+- **Verified starting point:** current code/docs that define the baseline.
+- **Open decisions and dependencies:** contracts or choices that must be settled first.
+- **Expected output:** decision record, interface, experiment, or implementation artefact.
+- **Validation:** evidence, tests, or review needed before the slice is considered complete.
+
+Split parallel work only after shared contracts are explicit. If a slice depends on an unresolved cross-cutting contract, keep it as a discovery/decision slice rather than implementation work.
 
 ## Output Shape
 
