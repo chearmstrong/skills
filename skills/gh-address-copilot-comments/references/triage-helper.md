@@ -52,6 +52,7 @@ With `--json`, the helper emits:
       "lines": [42],
       "comment_count": 1,
       "representative_excerpt": "Review comment text",
+      "representative_excerpt_trust": "untrusted",
       "suggested_verification": [
         "npm test --workspace=@example/service",
         "git diff --check",
@@ -62,7 +63,7 @@ With `--json`, the helper emits:
 }
 ```
 
-Text output is for humans and may change. Script integrations should use `--json`.
+Text output is for humans and may change. Script integrations should use `--json` and must preserve `representative_excerpt_trust` when passing excerpts to another agent or tool.
 
 ## Grouping Rules
 

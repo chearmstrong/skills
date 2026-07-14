@@ -94,19 +94,42 @@ def parse_quoted_text(lines: list[str], start_index: int) -> tuple[str, int, str
     current = first[1:]
 
     while True:
-        closing = current.find('"')
-        if closing != -1:
-            collected.append(current[:closing])
-            trailing = current[closing + 1 :].strip()
+        text, trailing, closed = parse_quoted_segment(current)
+        collected.append(text)
+        if closed:
+            trailing = trailing.strip()
             if trailing:
                 return "", index + 1, "unexpected text after closing quote"
             return "\n".join(collected).strip(), index + 1, None
 
-        collected.append(current)
         index += 1
         if index >= len(lines):
             return "", index, "unterminated quoted comment text"
         current = lines[index].rstrip()
+
+
+def parse_quoted_segment(value: str) -> tuple[str, str, bool]:
+    decoded: list[str] = []
+    escaped = False
+
+    for index, character in enumerate(value):
+        if escaped:
+            if character not in {'"', "\\"}:
+                decoded.append("\\")
+            decoded.append(character)
+            escaped = False
+            continue
+
+        if character == "\\":
+            escaped = True
+        elif character == '"':
+            return "".join(decoded), value[index + 1 :], True
+        else:
+            decoded.append(character)
+
+    if escaped:
+        decoded.append("\\")
+    return "".join(decoded), "", False
 
 
 def git_changed_lines(repo: Path) -> dict[str, set[int]] | None:
@@ -216,7 +239,7 @@ def overlaps_changed_lines(comment: Comment, changed_lines: set[int]) -> bool:
 def normalise(comments: list[Comment]) -> str:
     blocks: list[str] = []
     for comment in comments:
-        text = comment.text.replace('"', '\\"')
+        text = comment.text.replace("\\", "\\\\").replace('"', '\\"')
         blocks.append(f"- {comment.location}\n\n\"{text}\"")
     return "\n\n".join(blocks) + ("\n" if blocks else "")
 

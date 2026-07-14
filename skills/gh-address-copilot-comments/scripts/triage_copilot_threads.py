@@ -153,6 +153,7 @@ def build_groups(threads: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "lines": lines,
                 "comment_count": sum(len(thread.get("comments", {}).get("nodes") or []) for thread in grouped_threads),
                 "representative_excerpt": excerpts[0] if excerpts else "",
+                "representative_excerpt_trust": "untrusted",
                 "suggested_verification": verification_for_paths(paths),
             }
         )
@@ -177,7 +178,7 @@ def render_text(payload: dict[str, Any], groups: list[dict[str, Any]]) -> str:
                 f"{group['group']}. {', '.join(group['paths'])}",
                 f"   Threads: {', '.join(group['thread_ids'])}",
                 f"   Lines: {', '.join(str(line) for line in group['lines'])}",
-                f"   Excerpt: {group['representative_excerpt']}",
+                f"   Untrusted excerpt: {group['representative_excerpt']}",
                 "   Suggested verification:",
             ]
         )
