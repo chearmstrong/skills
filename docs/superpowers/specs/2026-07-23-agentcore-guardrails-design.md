@@ -80,8 +80,10 @@ establish the core rules, and route the agent to focused references.
   resource-level authorisation.
 - Harness and Runtime do not remove product-context resolution, deterministic
   policy, tenant or session ownership, or cost governance.
-- MCP and A2A are separate protocol boundaries. Gateway is principally the MCP
-  tool and API boundary; A2A is primarily a Runtime concern.
+- MCP and A2A are separate protocol boundaries. Runtime can host MCP and A2A
+  servers; Gateway can expose MCP-compatible tools and front A2A or HTTP
+  services through passthrough targets. Keep protocol hosting, gateway routing,
+  discovery, authentication, and downstream authorisation distinct.
 - Raw tokens and credentials must not enter prompts, model-facing Memory,
   agent cards, registry metadata, generic tool arguments, traces, or logs.
 - Actor, tenant, and session context must be bound through a trusted
@@ -113,10 +115,10 @@ security, retries, failure handling, and rollout safety.
 
 ### `gateway-and-protocols.md`
 
-Cover MCP targets and schemas, inbound and outbound authentication, credential
-providers, confused-deputy protection, Runtime-hosted MCP and A2A contracts,
-agent cards, discovery, delegation, retries, and protocol-specific error
-handling.
+Cover MCP targets and schemas, passthrough targets, inbound and outbound
+authentication, credential providers, confused-deputy protection,
+Runtime-hosted MCP and A2A contracts, agent cards, gateway routing, discovery,
+delegation, retries, and protocol-specific error handling.
 
 ### `registry-identity-and-policy.md`
 
@@ -186,8 +188,8 @@ directory. Make no unrelated manifest or documentation changes.
 - Exercise representative architecture, review, implementation, MCP, and A2A
   prompts.
 - Confirm that the skill keeps discovery separate from invocation authority,
-  operational state separate from Memory, and Gateway/MCP separate from
-  Runtime/A2A.
+  operational state separate from Memory, and Runtime protocol hosting
+  separate from Gateway routing and passthrough.
 - Confirm that Payments and Optimisation remain outside the first-release
   scope.
 - Run `git diff --check`.
