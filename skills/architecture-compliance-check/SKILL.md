@@ -1,6 +1,6 @@
 ---
 name: architecture-compliance-check
-description: Verify architecture and implementation against documented patterns, project rules, and authoritative evidence. Use when reviewing code, making architectural decisions, drafting or reviewing platform proposals and architecture spikes, reconciling design documents, or before committing changes.
+description: Verify architecture and implementation against documented patterns, project rules, and authoritative evidence. Use when reviewing code, assessing reusable assets or platform alternatives, making architectural decisions, drafting or reviewing architecture spikes, reconciling design documents, or before committing changes.
 ---
 
 # Architecture Compliance Check
@@ -85,6 +85,32 @@ For every material claim, label it by its evidence state:
 
 Do not make a proposed design sound like current implementation, and do not turn an observed implementation detail into a recommended platform boundary without an explicit decision.
 
+### Research And Inventory Mode
+
+Use this branch when the question is whether to reuse existing delivery or operational assets, evaluate platform alternatives, or explain why an option is not being taken forward. It complements implementation compliance; it does not create a decision or migration plan.
+
+Build these compact records from the evidence actually checked:
+
+| Record | Minimum fields | Rule |
+| --- | --- | --- |
+| **Evidence matrix** | Claim, state, source, checked date/version, caveat or open question | One material claim per row. A source without a claim is not evidence. |
+| **Asset inventory** | Asset, repository evidence, ownership/coupling, reuse status (`reuse`, `adapt`, `do not reuse`, `unknown`), rationale | Treat a whole workflow, dashboard, or deployment path as coupled until its dependencies are shown. |
+| **Discounted option** | Option, gate that failed or remains unknown, source, re-entry condition | Retain discounted options; do not silently delete them from the comparison. |
+
+Use `unknown` rather than `reuse` when the ownership, security boundary, lifecycle cost, or operating dependency has not been checked. Do not equate copied configuration with a reusable capability.
+
+### Platform Decision Gates
+
+For a platform alternative, assess only the gates that could change the recommendation. Typical gates are:
+
+- **Model path:** supported model providers, regional availability, bring-your-own-key requirements, and who owns model access.
+- **Commercial path:** pricing unit, cost owner, metering limits, and which costs are documented versus merely estimated.
+- **Hosting and data boundary:** SaaS versus customer-hosted control, data residency, retention, and egress or training-use terms relevant to the workload.
+- **Identity and tenancy:** caller identity propagation, tenant isolation, credential ownership, and auditability.
+- **Operational fit:** observability, evaluation/rollout controls, deployment model, support maturity, and required operating skills.
+
+Record a gate as `pass`, `conditional`, `fail`, or `unknown`; do not collapse missing evidence into `pass`. Verify time-sensitive vendor claims from primary documentation, and date the check.
+
 ### Assumption Ledger
 
 Include a compact ledger whenever unresolved assumptions could change scope, sequencing, ownership, risk, or a platform boundary.
@@ -104,6 +130,8 @@ When a spike has more than one design document, check them together for:
 - incompatible ownership, tenancy, state, memory, idempotency, or observability assumptions;
 - duplicate scopes that could lead parallel engineers to implement competing shapes; and
 - vendor claims that are only cited, caveated, or versioned in one document.
+
+For a new assessment, check links in both directions: the assessment should identify the source spike or inventory it extends, and each relevant source document should link back where readers need the comparison to interpret the current recommendation. Prefer stable document or commit links over an unmerged branch link when recording provenance.
 
 Report the conflicting document sections and propose the smallest wording or decision change that restores one coherent model.
 
