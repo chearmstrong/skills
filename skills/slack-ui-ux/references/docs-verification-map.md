@@ -15,6 +15,14 @@ Prefer Slack-owned documentation:
 - `https://docs.slack.dev/apis/events-api/` for Events API envelopes, retries,
   rate limiting, and challenge handling.
 - `https://docs.slack.dev/reference/methods` for Web API method contracts.
+- `https://docs.slack.dev/concepts/agent-design/` for current agent experience
+  and trust guidance.
+- `https://docs.slack.dev/ai/agent-entry-and-interaction/` for agent surfaces
+  and entry points.
+- `https://docs.slack.dev/ai/developing-agents/` for messaging experiences,
+  response loops, events, prompts, threads, statuses, and streaming.
+- `https://docs.slack.dev/reference/app-manifest/` for `agent_view` and
+  `assistant_view` configuration.
 - `https://api.slack.com/apis/rate-limits` when rate-limit policy details are
   still maintained there.
 
@@ -30,6 +38,8 @@ Use official docs whenever a task depends on:
 - `chat.postMessage`, `chat.update`, `views.open`, `views.update`, or
   `response_url` behaviour.
 - Rate limits, Marketplace policy, or non-Marketplace app policy.
+- Agent messaging experience, manifest migration, suggested prompts, active
+  context, agent events, thread methods, statuses, streaming, or notifications.
 - Slack Connect, Enterprise Grid, shared channel, or org-level behaviour.
 
 ## Verification Output

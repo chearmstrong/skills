@@ -1,6 +1,6 @@
 ---
 name: slack-ui-ux
-description: Design, review, or improve generic Slack app user experiences, Slack UI/UX, Block Kit messages, modals, App Home views, shortcuts, buttons, select menus, approval flows, Assistant-style Slack interactions, Slack-facing copy, and interaction safety. Use when changing Slack surfaces or Slack product behaviour; verify against official Slack documentation for Block Kit limits, modals, interactivity, Events API retries, OAuth scopes, Web API methods, rate limits, manifests, or newly released Slack platform features.
+description: Design, review, or improve generic Slack app user experiences, Slack UI/UX, Block Kit messages, modals, App Home views, shortcuts, buttons, select menus, approval flows, Agent DM and Assistant-style interactions, Slack-facing copy, and interaction safety. Use when changing Slack surfaces or Slack product behaviour; verify against official Slack documentation for Block Kit limits, modals, interactivity, Events API retries, OAuth scopes, Web API methods, rate limits, manifests, or newly released Slack platform features.
 ---
 
 # Slack UI/UX
@@ -19,6 +19,7 @@ the job:
 | Notify, summarise, or propose next steps | Message or thread reply | Least intrusive; keeps context visible |
 | Ask one quick decision | Message button or select | Keeps the choice beside the context |
 | Collect structured input | Modal | Focused data entry with validation |
+| Hold a multi-turn agent conversation | Agent DM or agent container | Keeps each task in a familiar threaded DM |
 | Start a workflow from anywhere | Global or message shortcut | User intent is explicit at launch |
 | Maintain a persistent dashboard | App Home | Good for status, settings, and queues |
 | Personal failure or validation notice | Ephemeral/private message | Avoids noisy public corrections |
@@ -32,6 +33,9 @@ Load only the references that match the task:
 
 - **MANDATORY for message, Block Kit, App Home, or copy work**: read
   `references/block-kit-patterns.md`.
+- **MANDATORY for Agent DMs, agent containers, suggested prompts, agent
+  response loops, or `agent_view` migration**: read
+  `references/agent-dm-patterns.md`.
 - **MANDATORY for modals, shortcuts, and multi-step form flows**: read
   `references/modals-and-shortcuts.md`.
 - **MANDATORY for approvals, write actions, destructive actions, or externally
@@ -54,6 +58,8 @@ not load approval guidance unless the modal submits a side effect.
 - Prefer one clear next action over a row of equivalent-looking buttons.
 - Make private/public visibility explicit when the consequence matters.
 - Treat every interactive payload as retryable and stale until proven current.
+- Treat an Agent DM as a timeline of task threads, not one unbounded chat
+  transcript.
 - Use Slack-native language: short sentences, direct verbs, and concrete nouns.
 - Optimise for mobile scanability: compact sections, bounded text, no layouts
   that depend on wide desktop alignment.
@@ -64,6 +70,7 @@ not load approval guidance unless the modal submits a side effect.
 | --- | --- | --- | --- |
 | Screenshot | First visible block, action row, narrow-screen wrapping, visible write target | `block-kit-patterns.md` | New or uncertain block support, text limits, or surface support |
 | Block Kit JSON | Interactive elements, fallback text, private/public response paths, mrkdwn escaping | `block-kit-patterns.md` | Block, element, composition object, or message update behaviour |
+| Agent DM or container | Thread boundaries, prompts, loading state, progress, context provenance, final recap | `agent-dm-patterns.md`; add approval guidance for writes | Messaging experience, manifest, events, streaming, thread methods, or migration behaviour |
 | Product spec | Source state, actor, target, visibility, side effect, and terminal states | Match the proposed surface; add approval guidance for writes | OAuth scopes, events, Web API methods, rate limits, or Slack Connect behaviour |
 | Live Slack behaviour | Duplicate clicks, expired interactions, retries, stale controls, and public/private outcomes | `approval-and-side-effect-patterns.md` for writes; otherwise match the surface | Interactivity acknowledgement, retry headers, `response_url`, or modal timing |
 
@@ -127,6 +134,8 @@ claiming or implementing:
   caveats.
 - OAuth scopes, manifest fields, bot permissions, and Web API method contracts.
 - Rate limits and any Marketplace/non-Marketplace policy changes.
+- Agent versus Assistant messaging experience, manifest fields, events,
+  suggested prompts, statuses, streaming, app threads, and migration behaviour.
 
 Use Slack-owned sources first, especially `https://docs.slack.dev/` and
 Slack's legacy `https://api.slack.com/` pages when they are still canonical for
@@ -149,8 +158,8 @@ the topic. Prefer current docs over memory, old blog posts, or forum answers.
 
 When finishing Slack UI/UX work, report:
 
-- Surface changed: message, modal, shortcut, App Home, Assistant interaction, or
-  copy only.
+- Surface changed: message, modal, shortcut, App Home, Agent DM/container,
+  legacy Assistant interaction, or copy only.
 - User-visible behaviour and side effects.
 - Confirmation, idempotency, and stale-interaction handling used, when relevant.
 - Verification split into: Slack docs checked, automated tests/snapshots run,
