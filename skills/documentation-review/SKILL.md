@@ -1,6 +1,6 @@
 ---
 name: documentation-review
-description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Use when reviewing markdown, READMEs, code comments, docstrings, platform proposals, architecture spikes, or extraction inventories.
+description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Use when reviewing markdown, READMEs, code comments, docstrings, platform proposals, architecture spikes, ADRs, extraction inventories, or related documents that must represent an agreed architecture decision consistently.
 ---
 
 # Documentation Review
@@ -60,14 +60,21 @@ Do not review a document evenly from top to bottom. Classify claims first, then 
    - Keep the canonical location.
    - Replace duplicates with links, or delete them if they will drift.
 
-## Platform Proposal Routing
+## Architecture Decision Consistency
 
-For a platform proposal, architecture spike, or extraction inventory, use `architecture-compliance-check` alongside this skill. Keep responsibilities separate:
+Use this review path automatically when the request supplies an ADR, agreed decision, meeting notes, architecture proposal, or several related documents that must describe the same design. Otherwise, perform the local claim triage above; do not expand a one-file review into a repository-wide scan.
 
-- **This skill:** readability, terminology, duplication, claim clarity, and whether a reader can safely act on the document.
-- **`architecture-compliance-check`:** verified-versus-proposed states, assumptions, external/vendor claims, boundary contracts, cross-document coherence, and handover for parallel slices.
+1. **Read the decision source first.** Extract the decision, constraints, accepted terms, explicitly deferred work, and any fact-versus-proposal boundary. If no decision source is supplied, state that the review is limited to claims evidenced in the named documents.
+2. **Set the review boundary.** Review changed documents plus the named related documents. Include additional files only when they are the canonical source or directly contradict a claim; report any necessary expansion before relying on it.
+3. **Check representation, not viability.** Find contradictions, obsolete terms, unsupported certainty, missing consequences, and a mismatch between diagrams, summaries, ADRs, and detailed design. Keep the decision source canonical rather than reconciling conflicts by averaging them.
+4. **Report the smallest correction.** Name the decision source and conflicting location, then propose the least invasive wording, deletion, link, or clarification that restores consistency.
 
-Do not repeat the architecture check in this review. Link the two outputs when both are needed, and resolve terminology or scope conflicts in the canonical document rather than maintaining parallel explanations.
+Use `architecture-compliance-check` alongside this skill when it is available and the question is whether the architecture itself is viable, implemented, secure, or correctly bounded. Keep responsibilities separate:
+
+- **This skill:** whether documentation represents an agreed decision consistently and is readable, traceable, and safe to act on.
+- **`architecture-compliance-check`:** whether the decision is supported by implementation and authoritative evidence, with sound contracts, assumptions, and boundaries.
+
+Never invent a decision to make documents agree. Surface the missing or conflicting decision source as the finding.
 
 ## Documentation Traps
 
@@ -75,6 +82,7 @@ Do not repeat the architecture check in this review. Link the two outputs when b
 - **Example rot:** snippets use old names, missing imports, obsolete CLI flags, or APIs not present in the pinned dependency version.
 - **Default drift:** prose mentions defaults that have moved into config, feature flags, environment variables, or CDK context.
 - **Boundary ambiguity:** docs do not say which module, team, stack, tenant, region, or lifecycle owns the behaviour.
+- **Decision drift:** an ADR, diagram, summary, and detailed design each describe a different version of the agreed architecture.
 - **Copy-paste patterns:** a documented example is safe for one route/job/stack but unsafe as a general pattern.
 - **External-doc overreach:** current vendor docs are treated as true even though the repository pins an older version.
 - **Noise preservation:** historical rationale, obvious definitions, or onboarding filler survives because it sounds helpful.
@@ -87,6 +95,9 @@ Never:
 - Keep a code comment that merely narrates the next line.
 - Add "currently", "simply", or "just" to avoid proving a claim.
 - Preserve duplicate setup instructions in multiple files.
+- Silently broaden a local documentation review into every document in the repository.
+- Treat a newer summary or diagram as authority over an explicitly named ADR or agreed decision without reporting the conflict.
+- Invent a missing design decision to remove an inconsistency.
 - Let generated output, screenshots, or examples remain after the source behaviour changed.
 - Cite a blog when official docs, pinned dependency metadata, or repository tests can answer the question.
 - Impose a different language or locale variant while editing nearby text; preserve the document or project's existing convention unless the user asks for a conversion.
@@ -98,6 +109,7 @@ For each material issue, report:
 - **Location:** file and line or section.
 - **Claim:** the specific statement under review.
 - **Evidence:** implementation, config, tests, official source, or lack of source.
+- **Decision source:** ADR, meeting note, agreed design, or `none supplied` for an architecture consistency finding.
 - **Verdict:** accurate, stale, unsupported, duplicated, unclear, or too verbose.
 - **Fix:** exact wording change, deletion, link target, or test/example to run.
 
@@ -105,7 +117,7 @@ For each material issue, report:
 
 **Works with:**
 
-- `architecture-compliance-check` - Verify docs match architecture
+- `architecture-compliance-check` - Verify architecture viability, boundaries, and implementation evidence
 - `verification-before-completion` - Verify docs before claiming done
 - `systematic-debugging` - Document fixes accurately
 
