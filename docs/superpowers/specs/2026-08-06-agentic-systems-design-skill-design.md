@@ -2,10 +2,11 @@
 
 ## Goal
 
-Replace the standalone agentic-systems architecture reference with a portable
+Convert the uncommitted working-tree architecture reference into a portable
 skill that helps an agent design new agentic systems and review existing ones.
-It must favour the lowest sufficient autonomy and keep source-backed
-architecture, operational controls, and existing skill boundaries explicit.
+The resulting skill must favour the lowest sufficient autonomy and keep
+source-backed architecture, operational controls, and existing skill
+boundaries explicit.
 
 ## Scope
 
@@ -19,7 +20,9 @@ references/
   source-map.md
 ```
 
-Remove `docs/engineering/agentic-systems-architecture.md` and its links from
+Move the uncommitted working-tree document at
+`docs/engineering/agentic-systems-architecture.md` into the skill's reference
+files, then remove that standalone document and its uncommitted links from
 `README.md` and `docs/resources.md`. Add the new skill to the repository's
 skill listings and plugin manifests where those inventories enumerate skills.
 
