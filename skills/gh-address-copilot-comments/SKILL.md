@@ -40,6 +40,14 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
 4. Implement focused fixes for valid comments.
    - Keep each change traceable to a specific thread or small cluster of threads.
    - Add or update tests when the comment exposes a behavioural bug, edge case, or missing coverage.
+   - **For approval-boundary fixes**, where one action persists durable state and creates queued, webhook, background-job, or notification work, make the test contract explicit before resolving the thread. Cover the applicable behaviours below:
+     - the intended state transition is persisted exactly once, with its required fields;
+     - the downstream payload identifies the persisted record and carries the expected state;
+     - a repeated or ineligible action is a verified no-op, with no duplicate side effect;
+     - a downstream-dispatch failure has the documented outcome: rollback, retryable pending state, or an observable partial failure; and
+     - the original failure remains observable to the caller, logs, or monitoring rather than being silently converted to success.
+   - Do not require this checklist for a pure calculation, presentation, or isolated in-memory fix. It applies when correctness depends on the boundary between durable state and an external side effect.
+   - If code, tests, or documented intent do not establish the downstream-dispatch failure outcome, leave the thread open as unclear or partially valid and request that decision. Do not invent rollback or retry semantics merely to resolve the comment.
    - If a comment is invalid or needs explanation rather than code, draft a concise reply instead of forcing a change.
 5. Verify.
    - Run the smallest relevant tests or checks that support the fix.
@@ -119,5 +127,10 @@ Action: fixed | replied | left open | resolved
 Verification: <command or not run>
 Thread state check: <fetch command/result or not run>
 Discovery: normal Copilot filter | complete reconciliation inventory | supplied URL not found
+Approval-boundary contract: not applicable | <persistence; payload; no-op; failure outcome; observability>
 Notes: <short rationale>
 ```
+
+## Approval-Boundary Example
+
+For a handler that records `APPROVED` for a request and then publishes an `ApprovalGranted` job, the smallest relevant tests prove that the approval is written once, the job names that request and state, a second approval publishes nothing, and a publication failure follows the documented rollback, pending-retry, or observable-partial-failure path. If no such path is documented, report the ambiguity rather than selecting one in the fix.
