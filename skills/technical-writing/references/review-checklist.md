@@ -14,6 +14,8 @@ Use this checklist when reviewing existing writing. Report only issues that matt
 
 - Does the title promise what the piece delivers?
 - Is the audience clear from the opening section?
+- Can the intended reader identify the problem, recommendation, and required decision or action within the first minute?
+- Are verified state, agreed direction, proposals, examples, deferred scope, and open questions distinguishable?
 - Does the order match the reader's task or learning path?
 - Are prerequisites before steps?
 - Are conceptual sections separated from procedures and reference material?
@@ -23,6 +25,8 @@ Use this checklist when reviewing existing writing. Report only issues that matt
 
 - Are important subjects named rather than hidden behind "it", "this", or passive phrasing?
 - Are acronyms expanded on first use where appropriate?
+- Are project-specific terms defined before they appear in summaries or recommendations?
+- Does the draft avoid relying on meeting attendance, idioms, or cultural shorthand for meaning?
 - Are code blocks, commands, and outputs labelled clearly?
 - Are links descriptive enough without surrounding context?
 - Does each example state what the reader should learn from it?
@@ -43,6 +47,8 @@ For how-to guides, check that steps are actionable, ordered, and verifiable.
 For reference material, check that labels, options, defaults, and constraints are complete and consistent.
 
 For explanations, check that tradeoffs and causality are clear.
+
+For proposals, check that the opening establishes the problem, recommendation, status, and requested decision before detailed mechanisms; confirm that examples and deferred ideas do not read as commitments.
 
 For release notes, check that user impact, affected versions, and action required are explicit.
 

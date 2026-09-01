@@ -35,6 +35,35 @@ Use Diataxis as the default structure check:
 
 Do not mix these modes without reason. A common failure is burying task steps inside conceptual explanation, which makes the document feel thoughtful but hard to use.
 
+## Decision And Architecture Proposals
+
+Treat a proposal as a decision path, not a record of everything discussed. A reader should be able to answer these questions from the opening:
+
+1. What problem are we solving?
+2. What is being proposed?
+3. What decision or feedback is required?
+
+Use this default narrative when no stronger local template exists:
+
+1. Problem and proposal requirements.
+2. Recommendation in plain English.
+3. Detailed proposal, boundaries, trade-offs, and realistic alternatives.
+4. Adoption or implementation sequence, where relevant.
+5. Decisions requested, open questions, and owners.
+6. Evidence and sources.
+
+Separate verified current state, agreed direction, proposals, illustrative examples, deferred scope, and open questions. Meeting history belongs in the main narrative only when it changes the decision or explains a constraint. Do not let an example folder tree, topology, or future use case read as an agreed commitment.
+
+## Global Readability
+
+Design for missing context rather than making assumptions about a reader's language proficiency. Globally readable writing retains technical precision while reducing avoidable inference:
+
+- Define project-specific terms and acronyms before using them in a summary or recommendation.
+- Prefer concrete actors and verbs to noun stacks, idioms, cultural shorthand, and ambiguous pronouns.
+- Keep one main claim in each paragraph; split sentences when multiple qualifications obscure the subject or action.
+- Place a concrete example immediately after a difficult abstraction and state what the example demonstrates.
+- Preserve necessary technical terminology. Explain it instead of replacing it with a friendlier but inaccurate term.
+
 ## Technical Prose Traps
 
 - Noun stacks hide relationships. Rephrase "workflow action approval state handling" into who acts on what and when.

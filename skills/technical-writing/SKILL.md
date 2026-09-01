@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
+description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, architecture proposals, design documents, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, writing for mixed or global audiences, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
 ---
 
 # Technical Writing
@@ -9,11 +9,12 @@ Use this skill to improve technical writing without weakening technical accuracy
 
 ## First Pass
 
-1. Identify the writing mode: review, guide, rewrite, outline, publication-safety pass, or publishing-readiness pass.
-2. Identify the audience: practitioner, maintainer, buyer, internal team, external reader, or mixed.
-3. Identify the source of truth: local repository files, linked docs, supplied draft, public references, or explicit user notes.
-4. Preserve facts, code identifiers, API names, log text, and quoted external wording exactly unless the user asks to change them.
-5. Use British English for new prose by default, unless the user asks for another language or locale variant, the target publication requires another style, or the document being reviewed is clearly written in another language or locale variant.
+1. Identify the writing mode: review, guide, rewrite, outline, proposal, publication-safety pass, or publishing-readiness pass.
+2. Identify the audience: practitioner, maintainer, buyer, internal team, external reader, or mixed. Note what context readers can reasonably be expected to share.
+3. Identify what the reader must understand, decide, or do after reading.
+4. Identify the source of truth: local repository files, linked docs, supplied draft, public references, or explicit user notes.
+5. Preserve facts, code identifiers, API names, log text, and quoted external wording exactly unless the user asks to change them.
+6. Use British English for new prose by default, unless the user asks for another language or locale variant, the target publication requires another style, or the document being reviewed is clearly written in another language or locale variant.
 
 ## Reference Loading
 
@@ -22,7 +23,7 @@ Load references deliberately:
 - **Mandatory for any review of existing writing**: read `references/review-checklist.md` before reporting findings.
 - **Mandatory for public, external, customer-facing, conference, blog, or publication-safety work**: read `references/public-safety.md` before drafting or approving wording.
 - **Mandatory for posts or docs being prepared for publication, preview, scheduling, or launch**: read `references/publishing-readiness.md` before calling the piece ready to publish.
-- **Mandatory for structure, tone, rewrite, or style-guide questions**: read `references/style-guide.md` before making recommendations.
+- **Mandatory for proposals, structure, tone, rewrite, global-audience, or style-guide questions**: read `references/style-guide.md` before making recommendations.
 
 Do not load unrelated references. For example, an internal ADR clarity pass does not need `public-safety.md` unless publication or disclosure risk is part of the request.
 
@@ -59,12 +60,25 @@ Skip sections that are not useful for the specific request.
 
 For planning or drafting requests:
 
-1. Clarify the job of the piece in one sentence.
-2. Choose the document type before choosing prose style: tutorial, how-to, reference, explanation, narrative blog, decision record, or release note.
+1. Clarify the job of the piece and the reader's required decision or action in one sentence.
+2. Choose the document type before choosing prose style: tutorial, how-to, reference, explanation, proposal, narrative blog, decision record, or release note.
 3. Propose a small outline before drafting long-form content.
 4. Put caveats next to numbers, benchmarks, security claims, reliability claims, and future-looking statements.
 5. Prefer specific, public-safe examples over vague generalities; avoid invented implementation detail.
 6. Keep the human voice: direct, concrete, and honest. Avoid marketing gloss unless the user asks for marketing copy.
+
+## Proposal Workflow
+
+For architecture, design, or decision proposals:
+
+1. Make the opening answer three questions within the first minute: What problem are we solving? What is proposed? What decision or feedback is required?
+2. State the evidenced current limitation and the requirements any acceptable proposal must satisfy before describing mechanisms.
+3. Explain the recommendation in plain language before introducing project-specific terms, acronyms, topology labels, or implementation detail.
+4. Distinguish verified current state, agreed direction, proposal, illustrative example, deferred scope, and open question. Use headings, a status table, or short inline labels when prose alone could blur them.
+5. Keep the main narrative focused on the decision. Move meeting history and supporting evidence to background or sources unless they change the decision.
+6. End with explicit decisions requested, unresolved evidence, owners, or next steps as the context requires.
+
+Use this sequence as a starting point, not a mandatory template: problem and requirements → recommendation in plain English → detailed proposal and trade-offs → adoption or implementation sequence → decisions and open questions → evidence. Prefer a shorter local template when it gives readers the same decision path.
 
 ## Rewrite Workflow
 
@@ -86,7 +100,7 @@ Resolve conflicts in this order:
 4. Reader task clarity and scanability.
 5. General style-guide preferences.
 
-Useful external baselines include the Google Developer Documentation Style Guide, Microsoft Writing Style Guide, Diataxis, GitLab Documentation Style Guide, Red Hat documentation style guides, GOV.UK content guidance, Atlassian content guidance, and the Apple Style Guide. Do not treat any one guide as absolute.
+See `references/style-guide.md` for the current list of useful external baselines and when each one applies. Do not treat any one guide as absolute.
 
 ## Compact Scenarios
 
