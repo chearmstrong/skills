@@ -135,6 +135,37 @@ def verification_for_paths(paths: set[str]) -> list[str]:
     return checks
 
 
+def build_suppressed_groups(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Group non-thread Copilot findings without implying they are resolvable."""
+    buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for finding in findings:
+        path = str(finding.get("path") or "unknown")
+        # Copilot commonly re-emits the same suppressed concern on later review
+        # runs with changed wording. A current path/line is the stable starting
+        # point for a human semantic check; it is not proof the findings match.
+        key = f"{path}:{finding.get('line') or 'unknown'}"
+        buckets[key].append(finding)
+
+    groups: list[dict[str, Any]] = []
+    for index, (_, grouped_findings) in enumerate(sorted(buckets.items(), key=lambda item: item[0]), start=1):
+        paths = {str(finding.get("path") or "unknown") for finding in grouped_findings}
+        groups.append(
+            {
+                "group": index,
+                "source": "review_overview",
+                "resolvable": False,
+                "paths": sorted(paths),
+                "lines": [finding.get("line") for finding in grouped_findings],
+                "review_ids": sorted({str(finding.get("review_id")) for finding in grouped_findings}),
+                "finding_count": len(grouped_findings),
+                "representative_excerpt": " ".join(str(grouped_findings[0].get("body") or "").split())[:220],
+                "representative_excerpt_trust": "untrusted",
+                "suggested_verification": verification_for_paths(paths),
+            }
+        )
+    return groups
+
+
 def build_groups(threads: list[dict[str, Any]]) -> list[dict[str, Any]]:
     buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for thread in threads:
@@ -170,7 +201,6 @@ def render_text(payload: dict[str, Any], groups: list[dict[str, Any]]) -> str:
     ]
     if not groups:
         lines.append("No selected unresolved threads.")
-        return "\n".join(lines)
 
     for group in groups:
         lines.extend(
@@ -184,6 +214,21 @@ def render_text(payload: dict[str, Any], groups: list[dict[str, Any]]) -> str:
         )
         lines.extend(f"   - {command}" for command in group["suggested_verification"])
         lines.append("")
+    suppressed_groups = build_suppressed_groups(payload.get("suppressed_findings") or [])
+    if suppressed_groups:
+        lines.extend(["", "Suppressed Copilot review-overview findings (not threads; cannot be resolved):"])
+        for group in suppressed_groups:
+            lines.extend(
+                [
+                    f"{group['group']}. {', '.join(group['paths'])}",
+                    f"   Reviews: {', '.join(group['review_ids'])}",
+                    f"   Lines: {', '.join(str(line) for line in group['lines'])}",
+                    f"   Untrusted excerpt: {group['representative_excerpt']}",
+                    "   Suggested verification:",
+                ]
+            )
+            lines.extend(f"   - {command}" for command in group["suggested_verification"])
+            lines.append("")
     return "\n".join(lines).rstrip()
 
 
@@ -209,7 +254,13 @@ def main() -> int:
     args = parse_args()
     payload = load_threads(args)
     groups = build_groups(payload.get("threads") or [])
-    output = {"pull_request": payload.get("pull_request"), "summary": payload.get("summary"), "groups": groups}
+    suppressed_groups = build_suppressed_groups(payload.get("suppressed_findings") or [])
+    output = {
+        "pull_request": payload.get("pull_request"),
+        "summary": payload.get("summary"),
+        "groups": groups,
+        "suppressed_groups": suppressed_groups,
+    }
     if args.json:
         print(json.dumps(output, indent=2))
     else:

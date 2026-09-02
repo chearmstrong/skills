@@ -30,11 +30,28 @@ Use this reference only when changing `scripts/triage_copilot_threads.py`, debug
         ]
       }
     }
+  ],
+  "suppressed_findings": [
+    {
+      "source": "review_overview",
+      "resolvable": false,
+      "review_id": "PRR_example",
+      "path": "packages/service/src/example.ts",
+      "line": 42,
+      "body": "A low-confidence finding from the Copilot review overview."
+    }
+  ],
+  "review_overviews": [
+    {
+      "assessment": "Needs a closer look",
+      "suppressed_parse_status": "parsed"
+    }
   ]
 }
 ```
 
 Missing optional line fields are allowed. Missing `comments.nodes` produces a path/line fallback group.
+Suppressed findings are not threads. They have no thread ID and must never be passed to the resolution helper. `review_overviews.assessment` is Copilot's top-level heading, for example `Needs a closer look`. The parser recognises a `Suppressed comments` heading followed by bold `path:line` entries; `present_unparsed` is an incomplete inventory, not evidence of zero findings.
 
 ## Output Shape
 
@@ -59,6 +76,15 @@ With `--json`, the helper emits:
         "git status --short"
       ]
     }
+  ],
+  "suppressed_groups": [
+    {
+      "source": "review_overview",
+      "resolvable": false,
+      "paths": ["packages/service/src/example.ts"],
+      "lines": [42],
+      "review_ids": ["PRR_example"]
+    }
   ]
 }
 ```
@@ -70,6 +96,7 @@ Text output is for humans and may change. Script integrations should use `--json
 - Threads with comment text are grouped by a hash of normalised comment text. This allows the same root-cause comment to group across multiple files.
 - Threads with no comment text fall back to `path` plus a 20-line bucket.
 - The helper does not infer whether a comment is valid, outdated, duplicate, or fixed. It only groups likely related work.
+- `suppressed_groups` similarly groups likely repeated overview findings, but does not make them threads or prove a finding remains valid.
 
 ## Verification Hints
 
@@ -78,5 +105,6 @@ Verification commands are inferred from nearby package metadata and file extensi
 ## Safety Limits
 
 - Never use grouping alone to resolve threads.
+- Never resolve or reply to an item in `suppressed_groups`; it is not a GitHub review thread.
 - Never treat identical text as proof that one code change fixes every thread.
 - Never print or persist GitHub tokens; the helper delegates authentication to `gh`.

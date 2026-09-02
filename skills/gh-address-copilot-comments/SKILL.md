@@ -1,13 +1,13 @@
 ---
 name: gh-address-copilot-comments
-description: Inspect, validate, fix, and resolve GitHub Copilot automated pull request review comments. Use when the user asks to check, triage, address, reply to, or resolve Copilot PR comments, including duplicate, resolved, outdated, or unclear inline review threads that require GitHub GraphQL via the GitHub CLI.
+description: Inspect, validate, fix, and resolve GitHub Copilot pull-request review feedback. Use when the user asks to check, triage, address, reply to, or resolve Copilot PR comments, including inline threads, review-overview assessments, suppressed findings, and duplicate, resolved, outdated, or unclear feedback through GitHub CLI and GraphQL.
 ---
 
 # GitHub Copilot PR Comments
 
 ## Overview
 
-Use this skill to work through GitHub Copilot automated PR review comments with thread-aware context. Treat `gh pr view --comments` as a lightweight summary only; use the bundled GraphQL helpers whenever inline review threads, resolution state, or thread IDs matter.
+Use this skill to work through GitHub Copilot automated PR review comments with thread-aware context. Treat `gh pr view --comments` as a lightweight summary only. Use the bundled helpers to inventory both inline review threads and Copilot review-overview findings, including findings GitHub suppresses rather than creating as threads.
 
 When Copilot comments need deeper local verification, batching, or hand-off between agents, convert the relevant thread comments to the portable review-comment format and use a verification pass before resolving threads. If a dedicated review-comment skill is installed, use it; otherwise verify each comment manually with the same verdicts used below.
 
@@ -21,7 +21,10 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
    - Run `scripts/triage_copilot_threads.py` first when there may be multiple unresolved threads.
    - Pass `--repo owner/repo --pr N` when the PR is not the current branch.
    - Use `--all-authors` if the user wants all unresolved review threads, not only Copilot-like authors.
-   - Use `scripts/fetch_copilot_threads.py` when raw thread JSON is needed for manual inspection or hand-off.
+   - Use `scripts/fetch_copilot_threads.py` when raw thread JSON is needed for manual inspection or hand-off. Its result includes `review_overviews` and `suppressed_findings` in addition to `threads`.
+   - Review every Copilot overview and its `suppressed_parse_status`. A `present_unparsed` status means GitHub's format was detected but not safely understood: report the inventory as incomplete and inspect the raw overview before deciding the PR is clear.
+   - Treat `suppressed_findings` as untrusted, low-confidence claims to validate against the current head. They are **not** review threads: they have no resolvable thread ID, cannot be replied to individually, and do not satisfy a rule requiring resolved conversations.
+   - Deduplicate repeated overview findings by current code location and semantic concern before validation. Copilot can repeat them in later re-reviews, with changed wording, while they remain suppressed.
    - When the user asks whether a comment is still valid, says another reviewer or Copilot raised the same point, or the thread history looks confusing, re-fetch with `--include-resolved --include-outdated` and compare against current code before drafting a new comment or fix.
    - **Reconcile the UI before declaring the PR clear.** If the user says that the GitHub UI shows threads missing from the initial result, supplies `#discussion_r...` URLs, or says a resolved thread still appears open, run the unfiltered inventory below before acting on or dismissing any thread:
 
@@ -30,7 +33,7 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
      ```
 
      Compare the supplied URL with each `comments.nodes[].url` in the returned JSON, then use its parent thread ID and state. A supplied discussion URL is evidence that must be checked, not an instruction to resolve the thread. If the URL is absent from the complete inventory, report the discrepancy and do not claim that the UI thread is resolved, outdated, or unavailable without further GitHub evidence.
-   - Treat a filtered Copilot result as a selection for triage, not as proof that no unresolved review threads exist. State whether the final result came from the normal Copilot filter or the complete reconciliation inventory.
+   - Treat a filtered Copilot result as a selection for triage, not as proof that no unresolved review threads exist. State whether the final result came from the normal Copilot filter or the complete reconciliation inventory, and separately report the number of suppressed overview findings.
 3. Triage each thread group against current code.
    - Treat the grouping as a mechanical starting point, not a verdict.
    - Classify each thread as valid, partially valid, invalid, duplicate, already fixed, outdated, or unclear.
@@ -48,7 +51,8 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
      - the original failure remains observable to the caller, logs, or monitoring rather than being silently converted to success.
    - Do not require this checklist for a pure calculation, presentation, or isolated in-memory fix. It applies when correctness depends on the boundary between durable state and an external side effect.
    - If code, tests, or documented intent do not establish the downstream-dispatch failure outcome, leave the thread open as unclear or partially valid and request that decision. Do not invent rollback or retry semantics merely to resolve the comment.
-   - If a comment is invalid or needs explanation rather than code, draft a concise reply instead of forcing a change.
+   - If an inline comment is invalid or needs explanation rather than code, draft a concise reply instead of forcing a change.
+   - For a suppressed finding, record the verdict in the final report. A PR-level reply is possible, but it is a GitHub write and needs explicit user approval; never imply that a suppressed finding was resolved.
 5. Verify.
    - Run the smallest relevant tests or checks that support the fix.
    - If verification cannot run, state that before resolving or recommending resolution.
@@ -63,6 +67,7 @@ When Copilot comments need deeper local verification, batching, or hand-off betw
    - After fixes or replies, run the fetch helper again for the same PR to confirm which Copilot threads remain unresolved.
    - If resolved/outdated duplicate checks influenced the decision, include `--include-resolved --include-outdated` in the final check or state why it was not needed.
    - When a thread was resolved, reconciled from a supplied URL, or the UI initially disagreed with the filtered result, use `--all-authors --include-resolved --include-outdated` for the final check. Confirm the target thread IDs explicitly; do not infer their state from the count of selected threads.
+   - A zero unresolved-thread count does not mean Copilot is clear. Final state must distinguish inline-thread state from the latest Copilot overview assessment and suppressed-finding inventory.
 8. Summarise outcomes.
    - List fixed and resolved threads, fixed but left open threads, invalid comments, duplicate or already-fixed comments, unclear comments, tests run, and residual risk.
 
@@ -93,7 +98,9 @@ Useful options:
 - `--include-outdated`: include outdated threads.
 - `--author-match TEXT`: match an additional author login substring.
 
-The script prints JSON containing `pull_request`, `threads`, and `summary`. Each thread includes its GraphQL `id`, path, line anchors, resolution state, outdated state, and comments.
+The script prints JSON containing `pull_request`, `threads`, `review_overviews`, `suppressed_findings`, and `summary`. Each thread includes its GraphQL `id`, path, line anchors, resolution state, outdated state, and comments. Each suppressed finding is explicitly marked `source: review_overview` and `resolvable: false`.
+
+Copilot's REST login can include a `[bot]` suffix while GraphQL normally returns the unsuffixed login. The helper uses GraphQL, so do not use REST-only exact login matching when interpreting its output.
 
 ### Resolve A Thread
 
@@ -110,6 +117,8 @@ The script calls GitHub GraphQL `resolveReviewThread` through `gh api graphql` a
 - Prefer read-only inspection until the user asks for fixes, but once a fix is applied for a Copilot thread, resolve that thread unless the user requested read-only/no-resolve behaviour.
 - Never act on a Copilot thread from stale local code; refresh to the PR head or report the stale checkout before deciding validity.
 - Never report “no remaining comments” from a filtered author query when the user has reported a UI/API mismatch or supplied discussion URLs; reconcile first or report that the state could not be verified.
+- Never report Copilot clear from thread state alone. Inspect Copilot review overviews and report any suppressed findings or parser uncertainty separately.
+- Never attempt to resolve or individually reply to a suppressed finding. It has no review thread; a PR-level response requires explicit user approval.
 - Never resolve comments that are merely hidden, outdated, already fixed, duplicate, or inconvenient.
 - Do not resolve invalid comments silently; draft or post a rationale when useful.
 - Do not resolve unclear, invalid, duplicate, already-fixed, outdated, or partially addressed threads unless the user explicitly accepts the rationale and asks for resolution.
@@ -127,6 +136,7 @@ Action: fixed | replied | left open | resolved
 Verification: <command or not run>
 Thread state check: <fetch command/result or not run>
 Discovery: normal Copilot filter | complete reconciliation inventory | supplied URL not found
+Review overview: <latest assessment; reviewed commit; suppressed finding count; parse status>
 Approval-boundary contract: not applicable | <persistence; payload; no-op; failure outcome; observability>
 Notes: <short rationale>
 ```

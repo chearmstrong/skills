@@ -1,0 +1,9 @@
+{
+  "id": "PRR_fixture",
+  "body": "### 🔵 Needs a closer look\n\n<details>\n<summary>Suppressed comments (2)</summary>\n\n**Previously missed (2)** — in code that has not changed since the last review.\n\n**apps/worker/src/example.ts:213**\n* The first suppressed finding.\n**apps/worker/src/other.ts:42**\n* The second suppressed finding.\n</details>",
+  "submittedAt": "2026-09-02T09:16:47Z",
+  "state": "COMMENTED",
+  "url": "https://github.com/example/repo/pull/1#pullrequestreview-1",
+  "author": {"login": "copilot-pull-request-reviewer"},
+  "commit": {"oid": "abcdef"}
+}

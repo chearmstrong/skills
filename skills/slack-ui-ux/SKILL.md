@@ -1,6 +1,6 @@
 ---
 name: slack-ui-ux
-description: Design, review, or improve generic Slack app user experiences, Slack UI/UX, Block Kit messages, modals, App Home views, shortcuts, buttons, select menus, approval flows, Agent DM and Assistant-style interactions, Slack-facing copy, and interaction safety. Use when changing Slack surfaces or Slack product behaviour; verify against official Slack documentation for Block Kit limits, modals, interactivity, Events API retries, OAuth scopes, Web API methods, rate limits, manifests, or newly released Slack platform features.
+description: Design, review, or improve Slack app UX, Block Kit messages, modals, App Home, shortcuts, agent DMs, Slack-facing copy, or safe approval/write flows. Verify current Slack platform constraints against official docs.
 ---
 
 # Slack UI/UX
