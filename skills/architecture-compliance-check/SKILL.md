@@ -1,6 +1,9 @@
 ---
 name: architecture-compliance-check
 description: Verify architecture, implementation, and documentation against documented patterns, project rules, and authoritative evidence. Use when reviewing code, reconciling implementation-backed documentation or canonical-source drift, assessing reusable assets or platform alternatives, deciding whether an architecture proposal is ready to share for agreement, drafting or reviewing architecture spikes, delegated-workflow boundaries, or before committing architecture-affecting changes.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Architecture Compliance Check

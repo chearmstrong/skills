@@ -1,6 +1,9 @@
 ---
 name: dynamodb-guardrails
 description: Use when adding, changing, debugging, or reviewing DynamoDB code, schemas, CDK/IaC, pagination, queries, scans, indexes, writes, retries, or tests. Ensures AWS-backed best practices, identifies anti-patterns, and proposes minimal safe fixes for DynamoDB usage.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # DynamoDB Guardrails

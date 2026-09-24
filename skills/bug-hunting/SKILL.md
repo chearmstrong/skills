@@ -1,6 +1,9 @@
 ---
 name: bug-hunting
 description: Use when asked to find bugs, audit an existing repository or scoped path, review a branch or pull request for correctness, investigate a suspected defect, or assess security/data-integrity risks without making speculative findings.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Bug Hunting

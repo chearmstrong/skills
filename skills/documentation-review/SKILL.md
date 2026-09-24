@@ -1,6 +1,9 @@
 ---
 name: documentation-review
 description: Review documentation to ensure it matches implementation, is correct and up-to-date, clear and concise, follows the appropriate language or locale variant, and has no duplication or redundancy. Use when reviewing markdown, READMEs, code comments, docstrings, platform proposals, architecture spikes, ADRs, extraction inventories, or related documents that must represent an agreed architecture decision consistently.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Documentation Review

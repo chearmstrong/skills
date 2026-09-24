@@ -1,6 +1,9 @@
 ---
 name: review-pr
 description: Use when reviewing another person's pull request, PR URL or number, or branch diff and the user wants a read-only review with line-anchored draft comments; do not use for self-review.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Review PR

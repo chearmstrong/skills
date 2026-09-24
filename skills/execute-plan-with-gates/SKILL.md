@@ -1,6 +1,9 @@
 ---
 name: execute-plan-with-gates
 description: Use only when the user explicitly asks to execute an implementation plan with gated or ungated phase controls, including whether to pause between phases, ask before commits, ask before moving to the next phase, or choose execution=main, execution=subagent, or execution=hybrid. Do not use for generic plan execution unless the user mentions gates, gated mode, ungated mode, approvals, phase checkpoints, commit permission, or delegated/sub-agent execution.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Execute plan with gates

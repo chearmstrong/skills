@@ -1,6 +1,9 @@
 ---
 name: manual-review-comment-export
 description: "Use only when the user explicitly invokes this manual skill or asks for review feedback exported in the portable `- path:line` plus quoted-comment hand-off format. Produces review-comments-ready feedback without requiring any specific consumer skill. Do not use for ordinary code review, PR review, self-review, or completion checks unless this exact manual export format is requested."
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Manual Review Comment Export

@@ -1,6 +1,9 @@
 ---
 name: agentic-systems-design
 description: Use when designing or reviewing an LLM-based agentic system, agent workflow, autonomy model, deterministic flow, single-agent system, multi-agent system, or agent architecture. Helps select the lowest sufficient autonomy, map reasoning, orchestration, tool, state, memory, identity, approval, observability, evaluation, and cost boundaries, and produce evidence-backed designs or review findings.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Agentic Systems Design

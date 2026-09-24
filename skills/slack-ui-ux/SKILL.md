@@ -1,6 +1,9 @@
 ---
 name: slack-ui-ux
 description: Design, review, or improve Slack app UX, Block Kit messages, modals, App Home, shortcuts, agent DMs, Slack-facing copy, or safe approval/write flows. Verify current Slack platform constraints against official docs.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Slack UI/UX

@@ -1,6 +1,9 @@
 ---
 name: governance-eval-designer
 description: "Use when designing or reviewing AI workflow governance: audit fields, decision traces, approval gates, pause or stop rules, rollout widen gates, offline evals, golden datasets, eval harnesses, structured-output validators, or repo-aware governance templates for agents, RAG/docs assistants, support assistants, coding agents, and approval-gated automations."
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Governance Eval Designer

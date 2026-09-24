@@ -1,6 +1,9 @@
 ---
 name: tool-vs-mcp-boundary-review
 description: Use when deciding whether an AI assistant capability, product adapter, tool gateway, or domain integration should be an inline helper, an agent-callable tool, a separate MCP-style server or tool boundary, or blocked from v1 because of trust, permissions, audit, ownership, blast radius, sensitive data, side effects, cost, or reuse concerns.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Tool vs MCP Boundary Review

@@ -1,6 +1,9 @@
 ---
 name: lambda-guardrails
 description: Use when adding, changing, debugging, or reviewing AWS Lambda functions, handlers, event sources, async invocations, retries, timeouts, concurrency, IAM permissions, environment variables, VPC access, packaging, observability, or Lambda CDK/IaC. Ensures AWS-backed best practices, identifies Lambda anti-patterns, and proposes minimal safe fixes.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Lambda Guardrails
@@ -15,6 +18,7 @@ Use this skill as an AWS Lambda implementation and review checkpoint. It is mean
 - Timeouts, visibility timeouts, batch windows, retry attempts, maximum event age, and downstream service limits must be reviewed together.
 - IAM permissions must be least privilege and match the function's actual AWS API calls, event source permissions, logging, tracing, and VPC needs.
 - Observability is part of the Lambda contract: logs, metrics, alarms, traces, correlation IDs, and failure destinations must support debugging production failures.
+- Distinguish handler duration from runtime initialisation. A missing packaged dependency, invalid bootstrap, or configuration failure can look like an application timeout even though the handler never started.
 
 Before changing Lambda behaviour, identify:
 
@@ -39,6 +43,7 @@ Before changing Lambda behaviour, identify:
 
    | Task type | Read from `references/review-checklist.md` |
    | --- | --- |
+   | Production incident, apparent timeout, or missing response | Handler Semantics; Timeouts, Resources, And Performance; Packaging, Runtime, And Deployment; Observability; Tests |
    | Handler or business logic change | Handler Semantics; Idempotency And Side Effects; Observability; Tests |
    | Async invocation, destination, or DLQ change | Async Invocation And Failure Handling; Idempotency And Side Effects; Observability; Tests |
    | SQS, stream, Kafka, or event source mapping change | Event Source Mappings; Idempotency And Side Effects; Concurrency And Backpressure; Tests |
@@ -67,7 +72,7 @@ Before changing Lambda behaviour, identify:
    - Reserved/provisioned concurrency, scaling, throttles, and backpressure
    - IAM least privilege, secrets, environment variables, VPC access, and logging permissions
    - Observability, alarms, traces, DLQs, destinations, and runbook usefulness
-   - Tests for duplicate delivery, partial failures, timeout/error paths, and IAM/config assumptions
+   - Tests for duplicate delivery, partial failures, timeout/error paths, IAM/config assumptions, and the generated deployment package's startup boundary where packaging or runtime resolution is relevant
 
 4. Verify AWS-backed claims:
    - Use `references/aws-docs-map.md` to identify relevant AWS docs when making or verifying a Lambda behavioural claim.

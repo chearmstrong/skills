@@ -1,6 +1,9 @@
 ---
 name: review-comments
 description: Address PR or code review comments supplied in a portable path/line plus quoted-comment hand-off format. Use when given review feedback from manual exports, GitHub UI, Copilot, subagents, humans, or a requested review-comment workflow to verify before fixing, research best practices with official sources where needed, and document whether each comment was valid, partially valid, duplicate, stale, or invalid.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Review Comments

@@ -1,6 +1,9 @@
 ---
 name: gh-address-copilot-comments
 description: Inspect, validate, fix, and resolve GitHub Copilot pull-request review feedback. Use when the user asks to check, triage, address, reply to, or resolve Copilot PR comments, including inline threads, review-overview assessments, suppressed findings, and duplicate, resolved, outdated, or unclear feedback through GitHub CLI and GraphQL.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # GitHub Copilot PR Comments

@@ -1,6 +1,9 @@
 ---
 name: agentcore-guardrails
 description: Use when designing, adding, changing, debugging, or reviewing Amazon Bedrock AgentCore architectures, Runtime, Harness, Gateway, MCP, A2A, Registry, Identity, Policy, Memory, Browser, browser profiles, Code Interpreter, code execution, Observability, Evaluations, IAM, credentials, sessions, tenancy, cost controls, or AgentCore CDK/IaC. Verifies current AWS behaviour, identifies trust-boundary and operational risks, and proposes minimal safe fixes.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # AgentCore Guardrails
@@ -26,6 +29,7 @@ Before judging a design or changing behaviour, trace:
 ## Hard Boundaries
 
 - Registry discovery does not grant invocation authority.
+- Model-visible tool filtering and capability context guide selection; they do not grant execution authority.
 - Gateway access does not replace downstream business authorisation.
 - Runtime or Harness isolation does not establish actor or tenant identity.
 - Operational state and audit evidence do not belong only in model-facing
@@ -77,8 +81,8 @@ Before judging a design or changing behaviour, trace:
 | Task type | Required reference |
 | --- | --- |
 | Runtime, container, session, version, execution limit, or Harness | MUST read `references/runtime-and-harness.md` in full |
-| Gateway, MCP, A2A, tool schema, target, Agent Card, passthrough, or delegation | MUST read `references/gateway-and-protocols.md` in full |
-| Registry, record, discovery, Identity, credential, Policy, or approval | MUST read `references/registry-identity-and-policy.md` in full |
+| Gateway, MCP, A2A, tool schema, capability context, target, Agent Card, passthrough, or delegation | MUST read `references/gateway-and-protocols.md` in full |
+| Registry, record, release metadata, tool requirements, discovery, Identity, credential, Policy, or approval | MUST read `references/registry-identity-and-policy.md` in full |
 | Memory, operational state, trace, monitoring, evaluation, or release assurance | MUST read `references/memory-observability-and-evaluations.md` in full |
 | Browser, browser profile, web automation, live view, session recording, Code Interpreter, code execution, file, terminal command, or sandbox | MUST read `references/built-in-tools.md` in full |
 | Actor or tenant binding, credentials, approval, IAM, networking, state, retry, telemetry, cost, lifecycle, or IaC spanning capabilities | Read only the relevant sections of `references/cross-cutting-review.md` |

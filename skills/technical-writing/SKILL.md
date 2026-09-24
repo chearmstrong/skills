@@ -1,6 +1,9 @@
 ---
 name: technical-writing
 description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, architecture proposals, design documents, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, writing for mixed or global audiences, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Technical Writing

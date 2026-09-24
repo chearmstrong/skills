@@ -1,6 +1,9 @@
 ---
 name: commit-message
 description: Generate a Conventional Commits message from uncommitted changes. Use when the user asks for a commit message, conventional commit, or summary of staged and unstaged changes without committing.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Generate Conventional Commit Message (Uncommitted Changes Only)

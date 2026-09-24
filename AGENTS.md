@@ -18,6 +18,9 @@ when quoting APIs, logs, external text, or identifiers.
 - Use only the required `name` and `description` frontmatter by default.
 - Add optional frontmatter only when it is part of the Agent Skills
   specification and has clear value.
+- Every published skill must declare `author: "chearmstrong"` and
+  `canonical-source: "https://github.com/chearmstrong/skills"` under
+  `metadata`.
 - Keep long reference material in `references/`, repeatable helpers in
   `scripts/`, and static templates in `assets/`.
 - Keep product-specific files optional; a skill should still make sense to an

@@ -1,6 +1,9 @@
 ---
 name: supply-chain-impact-check
 description: Triage external supply-chain advisories and compromise reports against a local repository. Use when asked whether a project is affected by an npm, package manager, build tool, dependency, lockfile, CI install path, native build hook, or software supply-chain incident, especially for read-only impact checks and mitigation recommendations across npm, Docker, Python, GitHub Actions, and public advisory sources.
+metadata:
+  author: "chearmstrong"
+  canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Supply Chain Impact Check
