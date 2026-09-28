@@ -1,6 +1,6 @@
 ---
 name: bug-hunting
-description: Use when asked to find bugs, audit an existing repository or scoped path, review a branch or pull request for correctness, investigate a suspected defect, or assess security/data-integrity risks without making speculative findings.
+description: Use when asked to find bugs, audit an existing repository or scoped path, review a branch or pull request for correctness, investigate a suspected defect, or assess security/data-integrity risks, including bearer-token validation, M2M caller identity, tenant access, and delegation, without making speculative findings.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -66,6 +66,8 @@ Use this table to decide where to spend attention before deep reading:
    - Do not report style, preference, or maintainability concerns unless they create a credible behavioural risk.
 
 MANDATORY: after risk mapping, read `references/bug-heuristics.md` before deep inspection. MANDATORY: before finalising findings, read `references/validation-and-reporting.md`. Do not load all references at the start when context is tight.
+
+When the reviewed flow selects caller, tenant, or delegated-user identity, or rejects a valid token for missing application claims, read [Identity Contract Review](references/identity-contract-review.md) before tracing that flow. Include its route/caller matrix in the review evidence. Do not load it for unrelated audits.
 
 ## Never Report Without Proof
 
