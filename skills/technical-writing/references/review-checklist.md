@@ -50,6 +50,8 @@ For explanations, check that tradeoffs and causality are clear.
 
 For proposals, check that the opening establishes the problem, recommendation, status, and requested decision before detailed mechanisms; confirm that examples and deferred ideas do not read as commitments.
 
+For architecture structure or coverage reviews, apply `references/architecture-structure.md`: map relevant topics to existing sections or linked sources, separate missing information from contradictions, and recommend the smallest useful change to the outline.
+
 For release notes, check that user impact, affected versions, and action required are explicit.
 
 For blog posts, check that the hook is honest, the narrative has a through-line, and technical claims remain grounded.

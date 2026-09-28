@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, architecture proposals, design documents, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, writing for mixed or global audiences, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
+description: Use when reviewing, planning, editing, or drafting technical writing such as documentation, architecture descriptions or proposals, arc42 structure and coverage reviews, design documents, blog posts, READMEs, ADRs, release notes, tutorials, how-to guides, reference material, explanations, public engineering posts, writing for mixed or global audiences, publication-safe technical content, or publishing-readiness checks for front matter, metadata, previews, scheduled posts, analytics, and public disclosure risk.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -27,6 +27,7 @@ Load references deliberately:
 - **Mandatory for public, external, customer-facing, conference, blog, or publication-safety work**: read `references/public-safety.md` before drafting or approving wording.
 - **Mandatory for posts or docs being prepared for publication, preview, scheduling, or launch**: read `references/publishing-readiness.md` before calling the piece ready to publish.
 - **Mandatory for proposals, structure, tone, rewrite, global-audience, or style-guide questions**: read `references/style-guide.md` before making recommendations.
+- **Mandatory for drafting, restructuring, or reviewing the structure or coverage of architecture descriptions, architecture proposals, or arc42 documentation**: read `references/architecture-structure.md` before choosing an outline or reporting coverage findings. Do not load it for sentence-level edits or non-architecture writing.
 
 Do not load unrelated references. For example, an internal ADR clarity pass does not need `public-safety.md` unless publication or disclosure risk is part of the request.
 
@@ -82,6 +83,8 @@ For architecture, design, or decision proposals:
 6. End with explicit decisions requested, unresolved evidence, owners, or next steps as the context requires.
 
 Use this sequence as a starting point, not a mandatory template: problem and requirements → recommendation in plain English → detailed proposal and trade-offs → adoption or implementation sequence → decisions and open questions → evidence. Prefer a shorter local template when it gives readers the same decision path.
+
+For architecture documents, use the arc42 coverage map in `references/architecture-structure.md` to select relevant topics. Preserve the proposal's decision path; a maintained system description may need a broader set of architecture views.
 
 ## Rewrite Workflow
 
