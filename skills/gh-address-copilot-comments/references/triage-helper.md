@@ -51,7 +51,7 @@ Use this reference only when changing `scripts/triage_copilot_threads.py`, debug
 ```
 
 Missing optional line fields are allowed. Missing `comments.nodes` produces a path/line fallback group.
-Suppressed findings are not threads. They have no thread ID and must never be passed to the resolution helper. `review_overviews.assessment` is Copilot's top-level heading, for example `Needs a closer look`. The parser recognises a `Suppressed comments` heading followed by bold `path:line` entries; `present_unparsed` is an incomplete inventory, not evidence of zero findings.
+Suppressed findings are not threads. They have no thread ID and must never be passed to the resolution helper. `review_overviews.assessment` is Copilot's top-level heading, for example `Needs a closer look`. The parser recognises `Suppressed comments` and `Previously missed` headings followed by bold `path:line` entries; `present_unparsed` is an incomplete inventory, not evidence of zero findings.
 
 ## Output Shape
 

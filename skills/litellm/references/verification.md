@@ -43,3 +43,32 @@ Current readiness can report success with no database configured; read the
 payload and confirm required persistence exists. Neither readiness nor a
 populated `/key/info` is an enforcement test. Never claim runtime verification
 from documentation, mock tests or a successful CDK synth.
+
+## Prove rate limits at the claimed scope
+
+Record the exact image/version, edition, effective key/user/team/model limits,
+Redis coordination settings, route and environment. Current LiteLLM
+[rate-limit documentation](https://docs.litellm.ai/docs/proxy/users) describes
+RPM, TPM and `max_parallel_requests` at several identity scopes and Redis
+coordination across instances. Treat that as documented capability; check the
+selected release and measure the deployed behaviour before claiming a shared
+ceiling. Use a restricted virtual key with fresh counters, synthetic traffic
+and known retries; the master key does not exercise an unset key limit.
+
+| Claim | Minimum proof | Boundary |
+| --- | --- | --- |
+| Limit is configured | Inspect the effective settings for the exact key, user, team or model and the delivered image/configuration | Configuration alone does not prove rejection |
+| Key RPM or TPM works locally | In the exact image, exceed one limit with a controlled burst; capture successes, a gateway `429` with `rate_limit_type` of `requests` or `tokens`, then recovery after reset | Proves only that key, route and local runtime; test RPM and TPM separately |
+| User or team limit is shared | Use distinct keys linked to the same user or team and show their combined traffic reaches that identity's limit | One key reaching its own limit proves nothing about the shared scope |
+| Concurrency is enforced | Hold the allowed number of requests in flight, then check the next request's rejection and subsequent recovery | Repeat through separate replicas before claiming a cluster-wide ceiling |
+| Limit is shared across replicas | Send requests deliberately through each instance using the same restricted identity and Redis; observe the combined limit, reset and measured overshoot | Test the Redis-unavailable policy separately; one proxy's result is insufficient |
+| Limit works in an environment | Repeat the relevant restricted-key test through that environment's public route and correlate edge and gateway evidence | Local proof does not establish dev or production behaviour |
+
+Use the [error reference](https://docs.litellm.ai/docs/proxy/error_reference)
+to distinguish a gateway limiter `429` from provider throttling. An edge `403`
+or an authentication rejection occurs before a rate-limit check and cannot
+prove whether the limiter works. For an explicitly zero-priced model, budget
+checks can be skipped; verify its RPM/TPM or concurrency controls separately.
+Zero recorded LiteLLM cost does not establish zero provider cost. Confirm the
+zero-price and rate-limit behaviour in the selected release before relying on
+it as an admission control.

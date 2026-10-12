@@ -1,6 +1,8 @@
 import importlib.util
+import io
 import json
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -138,6 +140,58 @@ class FetchThreadsTests(unittest.TestCase):
 
         self.assertEqual(findings, [])
         self.assertEqual(status, "present_unparsed")
+
+    def test_finds_standalone_previously_missed_items(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = """### Needs a closer look
+
+<details>
+<summary>Previously missed (2)</summary>
+
+**apps/worker/src/example.ts:213**
+* First finding.
+**apps/worker/src/other.ts:42**
+* Second finding.
+</details>"""
+
+        overviews, findings = fetch.review_overview_inventory([review])
+
+        self.assertEqual(overviews[0]["suppressed_parse_status"], "parsed")
+        self.assertEqual([(item["path"], item["line"]) for item in findings], [
+            ("apps/worker/src/example.ts", 213),
+            ("apps/worker/src/other.ts", 42),
+        ])
+        self.assertTrue(all(item["resolvable"] is False for item in findings))
+
+    def test_marks_unknown_previously_missed_format_as_unparsed(self):
+        findings, status = fetch.parse_suppressed_findings({
+            "id": "PRR_unknown",
+            "body": "### Previously missed (1)\n\nUnexpected",
+        })
+
+        self.assertEqual(findings, [])
+        self.assertEqual(status, "present_unparsed")
+
+    def test_reports_overview_findings_when_there_are_no_threads(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = review["body"].replace("Suppressed comments (2)", "Previously missed (2)")
+        payload = {
+            "pull_request": {"owner": "example", "repo": "repo", "number": 1},
+            "threads": [],
+            "reviews": [review],
+        }
+        output = io.StringIO()
+
+        with patch.object(fetch, "ensure_gh_authenticated"), patch.object(fetch, "fetch_threads", return_value=payload), \
+            patch("sys.argv", ["fetch_copilot_threads.py", "--repo", "example/repo", "--pr", "1"]), \
+            redirect_stdout(output):
+            result = fetch.main()
+
+        report = json.loads(output.getvalue())
+        self.assertEqual(result, 0)
+        self.assertEqual(report["summary"]["selected_threads"], 0)
+        self.assertEqual(report["summary"]["suppressed_findings"], 2)
+        self.assertEqual(len(report["suppressed_findings"]), 2)
 
 
 if __name__ == "__main__":

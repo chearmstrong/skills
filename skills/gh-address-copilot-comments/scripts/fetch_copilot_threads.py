@@ -215,7 +215,7 @@ def parse_suppressed_findings(review: dict[str, Any]) -> tuple[list[dict[str, An
     rather than being silently treated as no findings.
     """
     body = str(review.get("body") or "")
-    section = re.search(r"(?im)^.*suppressed\s+comments?.*$", body)
+    section = re.search(r"(?im)^.*(?:suppressed\s+comments?|previously\s+missed).*$", body)
     if not section:
         return [], "not_present"
 
