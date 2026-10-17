@@ -1,6 +1,6 @@
 ---
 name: postgresql-guardrails
-description: Use when building, changing, debugging, or reviewing PostgreSQL schemas, SQL, migrations, transactions, concurrent workers, connection handling, security, or query performance. Guides implementation and review with brief explanations of consequential decisions. Covers local PostgreSQL and loads AWS RDS guidance when relevant.
+description: Use when designing, building, changing, debugging, or reviewing PostgreSQL relational models, entities, relationships, schemas, SQL, joins, views, materialised views, migrations, transactions, concurrent workers, connections, security, or query performance. Guides implementation and review with brief explanations. Covers local PostgreSQL and loads AWS RDS guidance when relevant.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -31,20 +31,25 @@ Read the relevant references before making decisions in these areas:
 
 | Task | Reference |
 | --- | --- |
+| Entities, relationships, normalisation, ownership, history or mapping application models to storage | [Relational design](references/relational-design.md) |
+| Result-row meaning, joins, aggregation, views or derived read models | [Query and view design](references/query-and-view-design.md) |
 | Transactions, competing writes, retries, job claims or delivery | [Correctness and concurrency](references/correctness-and-concurrency.md) |
 | Tables, constraints, types, SQL, indexes or query performance | [Schema and queries](references/schema-and-queries.md) |
 | Connections, timeouts, migrations, security or recovery | [Connections and operations](references/connections-and-operations.md) |
 | RDS PostgreSQL, RDS Proxy, AWS authentication, networking or deployment | [AWS RDS](references/aws-rds.md), plus relevant general guidance |
 | Behavioural claims or version-dependent choices | [Documentation map](references/documentation-map.md) |
 
-For a general PostgreSQL review, read the first three references. For a narrow
-review or implementation, read only applicable sections. Do not load the AWS
-reference for local-only work unless assessing compatibility with an RDS target.
+For a broad implementation review, read correctness/concurrency, schema/queries
+and connections/operations; include the design references when modelling or
+query/view design is in scope. For narrow work, read only applicable sections.
+Do not load AWS guidance for local-only work unless assessing RDS compatibility.
 
 ## Apply And Verify
 
 1. Identify the required behaviour and main risk before changing the design.
    Prioritise correctness, security and recoverability before performance.
+   For a new model, establish business facts and relationships before tables,
+   then walk through representative writes and queries before tuning.
 2. Verify consequential PostgreSQL, driver and provider behaviour using the
    documentation map. If sources or runtime access are unavailable, state
    assumptions and limit claims; do not invent observations.

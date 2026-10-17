@@ -2,10 +2,10 @@
 
 ## Schema And SQL Correctness
 
-- Start with access patterns, relationships, ownership and retention. Use
-  relational columns for values requiring joins, constraints or frequent filters;
-  use JSONB where flexible document structure is justified. Do not reproduce a
-  key-value schema mechanically when moving from another database.
+- Use relational columns for values requiring joins, constraints or frequent
+  filters; use JSONB where flexible document structure is justified. Relational
+  design covers entity boundaries and lifecycle; query/view design covers result
+  shape and join correctness. Do not reproduce a key-value schema mechanically.
 - Choose identity, UUID or existing business keys according to generation,
   exposure and workload needs. Check required extension availability.
 - Encode required relationships and uniqueness in database constraints rather
@@ -24,7 +24,7 @@
   domains and extensions as lifecycle choices, not mandatory improvements.
 - Bind values with the actual driver's parameter API. Compose identifiers with
   its quoting/composition API or a strict allow-list, never value placeholders
-  or interpolated untrusted text. Check null comparisons and join multiplicity.
+  or interpolated untrusted text.
 - Bound request-path result sets. Pagination needs a deterministic order with
   a unique tie-breaker; keyset cursors must include the relevant ordering values.
   Explain consistency expectations when rows change between pages.

@@ -52,3 +52,54 @@ doctors can each go off duty only if at least one remains; each transaction
 counts on-duty doctors then updates only its own row under Read Committed.
 Recommend suitable protections, explain why one row lock is not a general
 solution, and propose verification. Do not execute anything.
+
+## C7: Entities, Membership And History
+
+Design a local PostgreSQL 16 model read-only. Users and teams belong to tenants.
+A user can join several teams in the same tenant; membership has a role and
+join/leave dates. People can leave and rejoin, and historical memberships must
+remain available. Only one current membership per user/team is allowed. Someone
+suggests storing team IDs and roles in a JSON array on each user, copying the
+team name into every membership, and creating a table per API response class.
+Recommend a small logical model and integrity rules, explaining the important
+trade-offs to a SQL beginner. Propose checks; do not execute anything.
+
+## C8: Joins And Aggregation
+
+Review this local PostgreSQL 16 report read-only. It must return every customer,
+including those without settled payments, with the count and total value of
+orders that have at least one settled payment. Each of Alice's two orders is
+worth 100, has two line items and three settled payments; Bob has no orders.
+
+```sql
+SELECT c.id, count(o.id) AS order_count, sum(o.total) AS order_total
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.id
+LEFT JOIN order_lines l ON l.order_id = o.id
+LEFT JOIN payments p ON p.order_id = o.id
+WHERE p.status = 'settled'
+GROUP BY c.id;
+```
+
+Explain what is wrong and propose a query shape and checks. A colleague suggests
+adding `DISTINCT` to both aggregates. Do not execute anything.
+
+## C9: Choosing And Securing A View
+
+Two local PostgreSQL 16 screens reuse the same users/teams membership query and
+must show current committed data. There is no measured performance problem.
+Should we create another stored table matching each screen, use a view, or use
+a materialised view because it is always faster? The app role has no base-table
+access; someone says the view automatically enforces the caller's tenant RLS.
+Give a concise recommendation, explanation and proposed verification. Read-only;
+do not execute anything or assume production settings.
+
+## C10: Materialised Results And Freshness
+
+A local PostgreSQL 16 analytics dashboard may show data up to one hour old.
+Representative measurements show its aggregation is expensive. We are
+considering a materialised view refreshed hourly with `CONCURRENTLY` so readers
+can continue. No refresh owner, unique index or initial population exists yet.
+The same result is proposed for authorising live team membership. Review the
+design, operational requirements and failure cases, explaining the main
+trade-offs briefly. Do not execute anything.

@@ -15,6 +15,10 @@ the installed version too.
 | Queue claims and pagination | [SELECT](https://www.postgresql.org/docs/current/sql-select.html) |
 | Retryable failures | [Error codes](https://www.postgresql.org/docs/current/errcodes-appendix.html), [serialization retries](https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html) |
 | Constraints and nulls | [Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html) |
+| Logical structures and namespaces | [Data definition](https://www.postgresql.org/docs/current/ddl.html), [schemas](https://www.postgresql.org/docs/current/ddl-schemas.html) |
+| Joins, grouping and result shape | [Table expressions](https://www.postgresql.org/docs/current/queries-table-expressions.html), [aggregates](https://www.postgresql.org/docs/current/functions-aggregate.html), [subqueries](https://www.postgresql.org/docs/current/functions-subquery.html) |
+| Reusable queries and view security | [CREATE VIEW](https://www.postgresql.org/docs/current/sql-createview.html) |
+| Persisted results and refresh | [Materialised views](https://www.postgresql.org/docs/current/rules-materializedviews.html), [REFRESH MATERIALIZED VIEW](https://www.postgresql.org/docs/current/sql-refreshmaterializedview.html) |
 | JSONB expressions and indexes | [JSON types](https://www.postgresql.org/docs/current/datatype-json.html) |
 | Instants and transaction time | [Date/time types](https://www.postgresql.org/docs/current/datatype-datetime.html), [date/time functions](https://www.postgresql.org/docs/current/functions-datetime.html) |
 | Index choice and online creation | [Indexes](https://www.postgresql.org/docs/current/indexes.html), [CREATE INDEX](https://www.postgresql.org/docs/current/sql-createindex.html) |
