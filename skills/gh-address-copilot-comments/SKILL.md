@@ -101,7 +101,7 @@ Useful options:
 - `--include-outdated`: include outdated threads.
 - `--author-match TEXT`: match an additional author login substring.
 
-The script prints JSON containing `pull_request`, `threads`, `review_overviews`, `suppressed_findings`, and `summary`. Each thread includes its GraphQL `id`, path, line anchors, resolution state, outdated state, and comments. Each suppressed finding is explicitly marked `source: review_overview` and `resolvable: false`.
+The script stops with an incomplete-inventory error if a thread has more than 100 comments; use another paginated GitHub query before concluding or resolving. The script prints JSON containing `pull_request`, `threads`, `review_overviews`, `suppressed_findings`, and `summary`. Each thread includes its GraphQL `id`, path, line anchors, resolution state, outdated state, and comments. Each suppressed finding is explicitly marked `source: review_overview` and `resolvable: false`.
 
 Copilot's REST login can include a `[bot]` suffix while GraphQL normally returns the unsuffixed login. The helper uses GraphQL, so do not use REST-only exact login matching when interpreting its output.
 

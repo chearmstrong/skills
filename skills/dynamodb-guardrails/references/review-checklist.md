@@ -61,7 +61,8 @@ NEVER:
 
 ## Writes, Idempotency, And Retries
 
-- Retryable writes use deterministic keys, conditional writes, optimistic locking, or explicit idempotency records.
+- Retryable writes use guards that prevent the specific repeated side effect; deterministic keys, conditions and optimistic locking do not guarantee idempotency by themselves.
+- For global tables, verify the consistency mode and cross-Region conflict handling. MREC conditions are evaluated locally; MRSC does not support transaction APIs.
 - Event-driven handlers assume at-least-once delivery.
 - `PutItem` that must not overwrite existing data uses `ConditionExpression`.
 - Append, increment, state transition, and deduplication operations are guarded against duplicate execution.

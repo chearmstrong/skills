@@ -77,8 +77,8 @@ Use the most direct official source that answers the pricing question:
 
 1. AWS Price List files for AWS service unit rates, region-specific infrastructure, and publication dates.
 2. AWS Pricing pages when Price List files are too broad or hard to interpret for a specific product.
-3. AWS Marketplace product pages for Bedrock commercial model token rates when available.
-4. Official model-provider pricing pages when Marketplace rows are missing, ambiguous, or lagging.
+3. AWS Marketplace product pages only when they describe the exact purchased product and billing route.
+4. For Bedrock, use the applicable [AWS Bedrock pricing](https://aws.amazon.com/bedrock/pricing/) for the actual region, model and inference tier. A direct-provider price describes a different route; if used as a proxy, label it as such and state the uncertainty. Use direct-provider pricing as authoritative only for direct-provider usage.
 5. Cost Explorer, CUR, or billing exports for calibration after representative runs, not as a substitute for the initial public-rate model.
 
 When sources disagree, preserve the discrepancy in the estimate instead of smoothing it over. Prefer a sensitivity note or multiplier until real billing data resolves the ambiguity.

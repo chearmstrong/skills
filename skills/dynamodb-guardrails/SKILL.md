@@ -17,7 +17,8 @@ Use this skill as a DynamoDB implementation and review checkpoint. It is meant t
 - Treat GSIs as projections over base-table items, not independent primary-key spaces.
 - Preserve `LastEvaluatedKey` exactly when paginating. Never drop, rebuild, or simplify token attributes.
 - Prefer `Query` with key conditions for request-path reads. Treat `Scan` and heavy filtering as cost and latency risks unless they are clearly admin, backfill, or small-table code.
-- Writes in retryable or event-driven paths must be idempotent through deterministic keys, `ConditionExpression`, optimistic locking, or another explicit guard.
+- Writes in retryable or event-driven paths must be idempotent. Verify that the chosen key, condition, version or idempotency record actually prevents the repeated side effect; its presence alone is not proof.
+- For global tables, identify MREC or MRSC. MREC conditional writes evaluate the local replica and cannot alone prevent simultaneous cross-Region writes; MRSC has different conflict behaviour and does not support transaction APIs. Verify the current [global table contract](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html).
 
 ## Workflow
 

@@ -45,10 +45,10 @@ NEVER:
 ## Event Source Mappings
 
 - Batch size, batching window, maximum concurrency, and retry settings match downstream capacity.
-- SQS visibility timeout exceeds the Lambda timeout plus enough retry and processing margin.
+- For SQS, check AWS guidance: visibility timeout of at least six times the function timeout, plus the batching window when configured. Lambda validates only that the function timeout does not exceed visibility timeout. See [SQS configuration](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-configure.html).
 - SQS handlers use partial batch responses when appropriate to avoid reprocessing successful messages.
 - Stream and Kafka handlers account for ordering, shard or partition blocking, poison records, and iterator age.
-- FIFO queues preserve message group semantics and avoid accidental concurrency assumptions.
+- For FIFO partial batch responses, stop after the first failure and return failed and unprocessed messages so ordering is preserved. Verify [AWS error handling](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-errorhandling.html).
 - Event source mapping permissions are scoped to the source.
 
 NEVER:

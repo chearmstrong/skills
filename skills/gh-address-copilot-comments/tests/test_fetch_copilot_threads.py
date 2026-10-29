@@ -41,6 +41,12 @@ def page(*, threads, threads_next, reviews, reviews_next):
 
 
 class FetchThreadsTests(unittest.TestCase):
+    def test_rejects_incomplete_comment_inventory(self):
+        incomplete = {"id": "thread-1", "comments": {"nodes": [], "pageInfo": {"hasNextPage": True}}}
+        with patch.object(fetch, "graphql_threads_page", return_value=page(threads=[incomplete], threads_next=None, reviews=[], reviews_next=None)), patch.object(fetch, "graphql_reviews_page", return_value=page(threads=[], threads_next=None, reviews=[], reviews_next=None)):
+            with self.assertRaisesRegex(RuntimeError, "comment.*incomplete"):
+                fetch.fetch_threads("example", "repo", 1)
+
     def test_does_not_repeat_completed_review_pages_while_threads_continue(self):
         thread_responses = [
             page(threads=[{"id": "thread-1"}], threads_next="threads-2", reviews=[{"id": "review-1"}], reviews_next=None),

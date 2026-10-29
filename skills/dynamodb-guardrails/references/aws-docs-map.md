@@ -44,6 +44,10 @@ Use for:
 - Projection choices
 - Base-table attributes available from index reads
 
+## Global Tables
+
+- [Global table consistency modes and transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_HowItWorks.html)
+
 ## Writes And Conditions
 
 - Condition expressions: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.ConditionExpressions.html

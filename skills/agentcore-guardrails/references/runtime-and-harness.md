@@ -47,6 +47,8 @@ universal preference.
 
 ## Sessions And Isolation
 
+- Compare microVM and Instances compute, available session lifetimes, storage persistence and deletion semantics for the selected region and release. Check [Instances](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-instances-how-it-works.html) and [filesystem configurations](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html); do not assume all session storage survives version updates.
+
 - Bind session identifiers to the authenticated actor and tenant.
 - Check session creation, reuse, expiry, idle timeout, maximum lifetime, and
   deletion.

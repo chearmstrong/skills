@@ -38,6 +38,7 @@ query(
           originalStartLine
           resolvedBy { login }
           comments(first: 100) {
+            pageInfo { hasNextPage }
             nodes {
               id
               body
@@ -186,7 +187,12 @@ def fetch_threads(owner: str, repo: str, number: int) -> dict[str, Any]:
                 }
 
             connection = pr[connection_name]
-            items.extend(connection.get("nodes") or [])
+            nodes = connection.get("nodes") or []
+            if connection_name == "reviewThreads":
+                for thread in nodes:
+                    if (thread.get("comments", {}).get("pageInfo") or {}).get("hasNextPage"):
+                        raise RuntimeError(f"Review thread {thread.get('id')} comment inventory is incomplete; fetch remaining comments before triage.")
+            items.extend(nodes)
             page_info = connection["pageInfo"]
             if not page_info["hasNextPage"]:
                 return

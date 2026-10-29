@@ -61,6 +61,8 @@ experience.
 - Use Slack's Activity surface as the expected notification discovery path;
   do not duplicate the same update across DM roots merely for visibility.
 
+Slack announced `assistant_view` deprecation for February 2027 and the Agent Sessions API. Verify current availability and migration guidance for `agents.sessions.setStatus`, `agents.sessions.rename`, and `agent_session_stopped` before implementing; older thread methods have a compatibility bridge. See [Slack’s announcement](https://docs.slack.dev/changelog/2026/08/20/agent-updates/).
+
 ## Implementation Verification Triggers
 
 Verify current Slack documentation before relying on:
