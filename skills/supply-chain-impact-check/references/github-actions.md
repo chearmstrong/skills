@@ -6,6 +6,7 @@ Load this reference when the advisory involves GitHub Actions, workflow dependen
 
 - `.github/workflows/*.yml`, reusable workflows, composite actions, local actions, and action references in nested repositories.
 - Third-party `uses:` references, whether they are pinned to SHA, tag, or branch.
+- `.github/workflows/actions.lock` and which workflows are onboarded, where supported. The lockfile covers direct and transitive action dependencies; reusable workflow calls and their dependencies have separate coverage.
 - Workflow triggers: `pull_request`, `pull_request_target`, `workflow_run`, `schedule`, release, tag, and manual dispatch.
 - Permissions blocks, token scopes, secret access, environment protections, and runner labels.
 - Cache keys, restored paths, uploaded artifacts, downloaded artifacts, and release assets.

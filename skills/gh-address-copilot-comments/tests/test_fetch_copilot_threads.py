@@ -147,6 +147,11 @@ class FetchThreadsTests(unittest.TestCase):
         self.assertEqual(findings, [])
         self.assertEqual(status, "present_unparsed")
 
+    def test_marks_partial_suppression_inventory_as_unparsed(self):
+        review = {"id": "PRR_partial", "body": "### Suppressed comments (2)\n\n**src/one.py:42**\n* One finding\n\nUnrecognised second finding"}
+        _, status = fetch.parse_suppressed_findings(review)
+        self.assertEqual(status, "present_unparsed")
+
     def test_finds_standalone_previously_missed_items(self):
         review = json.loads(FIXTURE_PATH.read_text())
         review["body"] = """### Needs a closer look

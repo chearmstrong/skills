@@ -15,7 +15,7 @@ Load this reference when the advisory involves Python packages, package indexes,
 - Wheels can avoid local native builds, but a compromised wheel is still executable code. Source distributions can execute build backends during installation.
 - Dev/test-only dependencies can still affect CI, release artefacts, generated clients, or build outputs.
 - Multiple Python environments may exist in one repo; check app, tooling, docs, and deployment folders separately.
-- Private index fallback behaviour matters. A dependency-confusion risk can exist even when the named package is internal.
+- Index selection depends on the package manager. In pip, `--extra-index-url` is not a lower-priority fallback: pip checks all configured locations and selects the best matching candidate. This can create dependency-confusion risk for internal packages.
 
 ## Mitigation Patterns
 
@@ -23,7 +23,7 @@ Load this reference when the advisory involves Python packages, package indexes,
 - Prefer hashes or lockfile integrity controls where the repo already supports them.
 - Rebuild wheels, containers, Lambda bundles, or generated artefacts created during the affected window.
 - Rotate package index tokens if compromised install/build steps could read them.
-- Separate immediate containment from longer-term hardening such as hash checking, private-index precedence, or build isolation.
+- Separate immediate containment from longer-term hardening such as hash checking, a controlled package index, or build isolation.
 
 ## Do Not
 

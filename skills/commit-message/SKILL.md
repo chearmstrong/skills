@@ -18,11 +18,12 @@ Expected tools: shell access to `git` where available.
 
 ## Inputs & Scope
 
-- Source of truth is **only**:
+- Source of truth is the current uncommitted work:
   - Staged: `git diff --cached`
   - Unstaged: `git diff`
+  - Untracked: files listed by `git status`; inspect relevant contents read-only without staging them
 - Ignore history (no previous commits), tags, or remote branches.
-- Read **diff hunks** first; open full files only if necessary to clarify intent.
+- Read **diff hunks** first; open tracked files only if necessary to clarify intent, and inspect relevant untracked files.
 
 ## Data collection (run as needed)
 
@@ -32,6 +33,8 @@ Expected tools: shell access to `git` where available.
   `git diff --cached --name-only`
 - Unstaged files:
   `git diff --name-only`
+- Untracked files:
+  `git ls-files --others --exclude-standard`
 - Staged hunks (concise):
   `git diff --cached --unified=0`
 - Unstaged hunks (concise):
@@ -46,13 +49,13 @@ Expected tools: shell access to `git` where available.
   - Common scopes: `api`, `evaluation`, `experiment`, `infra`, `docs`, `shared`
   - For multi-file changes, use the dominant area or omit scope if truly cross-cutting
   - Examples: `feat(api): ...`, `fix(evaluation): ...`, `refactor(infra): ...`
-- **subject**: imperative, ≤72 chars, no trailing period.
+- **subject**: imperative, no trailing period; follow the applicable length limit below.
 - **body** (optional): Include when:
   - The change affects multiple areas or has non-obvious implications
   - Breaking changes need explanation
   - The "why" isn't clear from the subject alone
   - Multiple related changes are grouped together
-  - Wrap at ≤100 chars; explain the _why_ and key changes.
+  - Follow the applicable body line limit below; explain the _why_ and key changes.
 - **breaking** (if applicable): add `!` after type or `BREAKING CHANGE:` footer with exact migration notes.
 - **issues/refs**: add `Closes #123`, `Refs ISSUE-456` if:
   - Present in diff hunks (e.g., "Fixes #123" in code comments)
@@ -61,10 +64,10 @@ Expected tools: shell access to `git` where available.
 
 ## Line Length Requirements
 
-**CRITICAL**: These limits are enforced by commitlint and must be strictly followed:
+Use repository commitlint or other documented rules when available. Otherwise use these defaults:
 
 - **Subject**: ≤72 characters
-- **Body lines**: ≤100 characters (hard limit enforced by commitlint)
+- **Body lines**: ≤100 characters
 - Wrap long lines at word boundaries
 - For URLs: Use descriptive text with page ID on separate line instead of full URL
 - Example: "See docs: Page Title\n(Page ID: 123)" instead of full URL
@@ -95,8 +98,7 @@ Using the collected diffs and heuristics, produce the final commit message in th
 
 Before outputting the final message, verify:
 
-- [ ] Subject line ≤72 characters (hard limit enforced by commitlint)
-- [ ] All body lines ≤100 characters (count each line individually)
+- [ ] Subject and body lines comply with repository rules or the defaults above
 - [ ] No trailing period in subject
 - [ ] Imperative mood in subject (e.g., "add" not "added", "fix" not "fixed")
 - [ ] Type matches the dominant change type

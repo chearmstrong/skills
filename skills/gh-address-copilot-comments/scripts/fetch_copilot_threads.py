@@ -248,6 +248,9 @@ def parse_suppressed_findings(review: dict[str, Any]) -> tuple[list[dict[str, An
                 "body": body_text,
             }
         )
+    declared_count = re.search(r"(?i)(?:suppressed\s+comments?|previously\s+missed)\s*\((\d+)\)", section.group())
+    if declared_count and len(findings) != int(declared_count.group(1)):
+        return findings, "present_unparsed"
     return findings, "parsed"
 
 

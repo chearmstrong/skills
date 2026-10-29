@@ -52,7 +52,7 @@ Default to read-only work. Do not change dependencies, lockfiles, CI workflows, 
 
 ## Npm-Specific Checks
 
-- Treat `package-lock.json`, `npm-shrinkwrap.json`, `pnpm-lock.yaml`, and `yarn.lock` as the source of installed transitive versions.
+- Use `package-lock.json`, `npm-shrinkwrap.json`, `pnpm-lock.yaml`, and `yarn.lock` as evidence of resolved transitive versions, not proof of what was installed. Check the effective install options, platform, and environment or deployed artefact.
 - Check every workspace package, not only the repository root.
 - `npm ci` installs from the lockfile but still runs lifecycle scripts unless configured otherwise.
 - `npm audit` may miss active compromise reports before advisory databases update; do not rely on it alone.
