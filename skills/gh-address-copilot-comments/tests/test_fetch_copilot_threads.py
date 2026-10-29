@@ -17,7 +17,7 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(fetch)
 
 
-def page(*, threads, threads_next, reviews, reviews_next):
+def page(*, threads, threads_next, reviews, reviews_next, head="a" * 40):
     return {
         "data": {
             "repository": {
@@ -26,6 +26,7 @@ def page(*, threads, threads_next, reviews, reviews_next):
                     "url": "https://github.com/example/repo/pull/1",
                     "title": "Example",
                     "state": "OPEN",
+                    "headRefOid": head,
                     "reviewThreads": {
                         "nodes": threads,
                         "pageInfo": {"hasNextPage": threads_next is not None, "endCursor": threads_next},
@@ -41,6 +42,25 @@ def page(*, threads, threads_next, reviews, reviews_next):
 
 
 class FetchThreadsTests(unittest.TestCase):
+    def setUp(self):
+        self.head_patch = patch.object(fetch, "graphql_head", return_value="a" * 40, create=True)
+        self.head_mock = self.head_patch.start()
+        self.addCleanup(self.head_patch.stop)
+
+    def test_rejects_head_change_between_thread_and_review_requests(self):
+        threads = page(threads=[], threads_next=None, reviews=[], reviews_next=None)
+        reviews = page(threads=[], threads_next=None, reviews=[], reviews_next=None, head="b" * 40)
+        with patch.object(fetch, "graphql_threads_page", return_value=threads), patch.object(fetch, "graphql_reviews_page", return_value=reviews):
+            with self.assertRaisesRegex(RuntimeError, "head.*changed"):
+                fetch.fetch_threads("example", "repo", 1)
+
+    def test_rejects_head_change_after_collection(self):
+        response = page(threads=[], threads_next=None, reviews=[], reviews_next=None)
+        self.head_mock.return_value = "b" * 40
+        with patch.object(fetch, "graphql_threads_page", return_value=response), patch.object(fetch, "graphql_reviews_page", return_value=response):
+            with self.assertRaisesRegex(RuntimeError, "head.*changed"):
+                fetch.fetch_threads("example", "repo", 1)
+
     def test_rejects_incomplete_comment_inventory(self):
         incomplete = {"id": "thread-1", "comments": {"nodes": [], "pageInfo": {"hasNextPage": True}}}
         with patch.object(fetch, "graphql_threads_page", return_value=page(threads=[incomplete], threads_next=None, reviews=[], reviews_next=None)), patch.object(fetch, "graphql_reviews_page", return_value=page(threads=[], threads_next=None, reviews=[], reviews_next=None)):
@@ -182,6 +202,97 @@ class FetchThreadsTests(unittest.TestCase):
 
         self.assertEqual(findings, [])
         self.assertEqual(status, "present_unparsed")
+
+    def test_parses_nested_previously_missed_overview_and_normalises_path(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = """<!-- ccr-overview-v2 -->
+<details>
+<summary><strong>1 previously missed issue</strong></summary>
+<details>
+<summary><picture><img alt="Medium severity"></picture> Provide a PostgreSQL procedure</summary>
+`qa/\u200bbruno/\u200bverification.md:18`
+The linked guide still uses DynamoDB.
+</details>
+</details>"""
+
+        overviews, findings = fetch.review_overview_inventory([review])
+
+        self.assertEqual(overviews[0]["suppressed_parse_status"], "parsed")
+        self.assertEqual(overviews[0]["body"], review["body"])
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["path"], "qa/bruno/verification.md")
+        self.assertEqual(findings[0]["line"], 18)
+        self.assertIn("Provide a PostgreSQL procedure", findings[0]["body"])
+        self.assertIn("still uses DynamoDB", findings[0]["body"])
+
+    def test_clear_check_rejects_unparsed_overview_without_inline_threads(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = "### Previously missed (1)\n\nUnexpected"
+        payload = {"pull_request": {"owner": "example", "repo": "repo", "number": 1}, "threads": [], "reviews": [review]}
+        output = io.StringIO()
+
+        with patch.object(fetch, "ensure_gh_authenticated"), patch.object(fetch, "fetch_threads", return_value=payload), \
+            patch("sys.argv", ["fetch_copilot_threads.py", "--repo", "example/repo", "--pr", "1", "--require-clear"]), \
+            redirect_stdout(output):
+            result = fetch.main()
+
+        report = json.loads(output.getvalue())
+        self.assertEqual(result, 1)
+        self.assertFalse(report["summary"]["clear"])
+
+    def test_clear_check_rejects_cautionary_assessment_without_inline_threads(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = "### Needs a closer look\n\n**No open issues** 🎉"
+        payload = {"pull_request": {"owner": "example", "repo": "repo", "number": 1}, "threads": [], "reviews": [review]}
+        output = io.StringIO()
+
+        with patch.object(fetch, "ensure_gh_authenticated"), patch.object(fetch, "fetch_threads", return_value=payload), \
+            patch("sys.argv", ["fetch_copilot_threads.py", "--repo", "example/repo", "--pr", "1", "--require-clear"]), \
+            redirect_stdout(output):
+            result = fetch.main()
+
+        self.assertEqual(result, 1)
+        self.assertFalse(json.loads(output.getvalue())["summary"]["clear"])
+
+    def test_clear_check_rejects_review_of_an_older_head(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = "### Looks good"
+        review["commit"] = {"oid": "a" * 40}
+        payload = {
+            "pull_request": {"owner": "example", "repo": "repo", "number": 1, "headRefOid": "b" * 40},
+            "threads": [], "reviews": [review],
+        }
+        output = io.StringIO()
+
+        with patch.object(fetch, "ensure_gh_authenticated"), patch.object(fetch, "fetch_threads", return_value=payload), \
+            patch("sys.argv", ["fetch_copilot_threads.py", "--repo", "example/repo", "--pr", "1", "--require-clear"]), \
+            redirect_stdout(output):
+            result = fetch.main()
+
+        self.assertEqual(result, 1)
+        self.assertFalse(json.loads(output.getvalue())["summary"]["clear"])
+
+    def test_clear_check_ignores_resolved_threads_in_full_inventory(self):
+        review = json.loads(FIXTURE_PATH.read_text())
+        review["body"] = "### Looks good"
+        review["commit"] = {"oid": "a" * 40}
+        thread = {
+            "isResolved": True, "isOutdated": False,
+            "comments": {"nodes": [{"author": {"login": "copilot-pull-request-reviewer"}}]},
+        }
+        payload = {
+            "pull_request": {"owner": "example", "repo": "repo", "number": 1, "headRefOid": "a" * 40},
+            "threads": [thread], "reviews": [review],
+        }
+        output = io.StringIO()
+
+        with patch.object(fetch, "ensure_gh_authenticated"), patch.object(fetch, "fetch_threads", return_value=payload), \
+            patch("sys.argv", ["fetch_copilot_threads.py", "--repo", "example/repo", "--pr", "1", "--include-resolved", "--require-clear"]), \
+            redirect_stdout(output):
+            result = fetch.main()
+
+        self.assertEqual(result, 0)
+        self.assertTrue(json.loads(output.getvalue())["summary"]["clear"])
 
     def test_reports_overview_findings_when_there_are_no_threads(self):
         review = json.loads(FIXTURE_PATH.read_text())

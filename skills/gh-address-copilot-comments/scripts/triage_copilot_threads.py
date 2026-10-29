@@ -229,6 +229,16 @@ def render_text(payload: dict[str, Any], groups: list[dict[str, Any]]) -> str:
             )
             lines.extend(f"   - {command}" for command in group["suggested_verification"])
             lines.append("")
+    unparsed = [
+        overview for overview in payload.get("review_overviews") or []
+        if overview.get("suppressed_parse_status") == "present_unparsed"
+    ]
+    if unparsed:
+        lines.extend(["", "Incomplete Copilot review overviews (inspect raw bodies before declaring clear):"])
+        lines.extend(
+            f"- {overview.get('id', '?')}: present_unparsed"
+            for overview in unparsed
+        )
     return "\n".join(lines).rstrip()
 
 
@@ -258,6 +268,7 @@ def main() -> int:
     output = {
         "pull_request": payload.get("pull_request"),
         "summary": payload.get("summary"),
+        "review_overviews": payload.get("review_overviews") or [],
         "groups": groups,
         "suppressed_groups": suppressed_groups,
     }

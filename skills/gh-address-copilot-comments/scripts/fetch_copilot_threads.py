@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import re
 import subprocess
@@ -23,6 +24,7 @@ query(
       url
       title
       state
+      headRefOid
       reviewThreads(first: 100, after: $cursor) {
         pageInfo { hasNextPage endCursor }
         nodes {
@@ -68,6 +70,7 @@ query(
       url
       title
       state
+      headRefOid
       reviews(first: 100, after: $cursor) {
         pageInfo { hasNextPage endCursor }
         nodes {
@@ -81,6 +84,15 @@ query(
         }
       }
     }
+  }
+}
+"""
+
+
+HEAD_QUERY = """\
+query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $number) { headRefOid }
   }
 }
 """
@@ -158,6 +170,13 @@ def graphql_reviews_page(owner: str, repo: str, number: int, cursor: str | None)
     return graphql_page(REVIEWS_QUERY, owner, repo, number, cursor)
 
 
+def graphql_head(owner: str, repo: str, number: int) -> str | None:
+    payload = graphql_page(HEAD_QUERY, owner, repo, number, None)
+    if payload.get("errors"):
+        raise RuntimeError(f"GitHub GraphQL errors:\n{json.dumps(payload['errors'], indent=2)}")
+    return payload["data"]["repository"]["pullRequest"].get("headRefOid")
+
+
 def fetch_threads(owner: str, repo: str, number: int) -> dict[str, Any]:
     threads: list[dict[str, Any]] = []
     reviews: list[dict[str, Any]] = []
@@ -184,7 +203,11 @@ def fetch_threads(owner: str, repo: str, number: int) -> dict[str, Any]:
                     "url": pr["url"],
                     "title": pr["title"],
                     "state": pr["state"],
+                    "headRefOid": pr.get("headRefOid"),
                 }
+
+            if not pr.get("headRefOid") or pr.get("headRefOid") != pr_meta["headRefOid"]:
+                raise RuntimeError("PR head changed or could not be verified during review inventory; retry.")
 
             connection = pr[connection_name]
             nodes = connection.get("nodes") or []
@@ -203,6 +226,9 @@ def fetch_threads(owner: str, repo: str, number: int) -> dict[str, Any]:
 
     if pr_meta is None:
         raise RuntimeError("GitHub returned no pull request metadata")
+
+    if graphql_head(owner, repo, number) != pr_meta["headRefOid"]:
+        raise RuntimeError("PR head changed or could not be verified after review inventory; retry.")
 
     return {"pull_request": pr_meta, "threads": threads, "reviews": reviews}
 
@@ -224,6 +250,32 @@ def parse_suppressed_findings(review: dict[str, Any]) -> tuple[list[dict[str, An
     section = re.search(r"(?im)^.*(?:suppressed\s+comments?|previously\s+missed).*$", body)
     if not section:
         return [], "not_present"
+
+    nested_count = re.search(r"(?i)<strong>\s*(\d+)\s+previously missed issues?\s*</strong>", section.group())
+    if nested_count:
+        nested = re.findall(
+            r"(?is)<details>\s*<summary>(.*?)</summary>\s*`([^`]+):(\d+)`\s*(.*?)</details>",
+            body[section.end() :],
+        )
+        if len(nested) != int(nested_count.group(1)):
+            return [], "present_unparsed"
+        findings = []
+        for title, path, line, detail in nested:
+            title = html.unescape(re.sub(r"<[^>]+>", "", title)).strip()
+            findings.append(
+                {
+                    "source": "review_overview",
+                    "resolvable": False,
+                    "review_id": review["id"],
+                    "review_url": review.get("url"),
+                    "review_commit_oid": (review.get("commit") or {}).get("oid"),
+                    "submitted_at": review.get("submittedAt"),
+                    "path": path.replace("\u200b", ""),
+                    "line": int(line),
+                    "body": f"{title}\n\n{detail.strip()}",
+                }
+            )
+        return findings, "parsed"
 
     end = re.search(r"(?im)^</details>\s*$", body[section.end() :])
     section_text = body[section.end() : section.end() + end.start()] if end else body[section.end() :]
@@ -280,6 +332,7 @@ def review_overview_inventory(reviews: list[dict[str, Any]]) -> tuple[list[dict[
                 "state": review.get("state"),
                 "commit_oid": (review.get("commit") or {}).get("oid"),
                 "assessment": review_assessment(review),
+                "body": review.get("body") or "",
                 "suppressed_parse_status": parse_status,
                 "suppressed_finding_count": len(suppressed),
             }
@@ -332,6 +385,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--all-authors", action="store_true", help="Include threads from all authors.")
     parser.add_argument("--include-resolved", action="store_true", help="Include already resolved threads.")
     parser.add_argument("--include-outdated", action="store_true", help="Include outdated threads.")
+    parser.add_argument("--require-clear", action="store_true", help="Return failure when the review inventory has open or unparsed findings.")
     parser.add_argument(
         "--author-match",
         action="append",
@@ -364,24 +418,41 @@ def main() -> int:
         include_outdated=args.include_outdated,
     )
 
+    latest_review = max(review_overviews, key=lambda item: item["submitted_at"] or "", default=None)
+    latest_findings = [
+        finding for finding in suppressed_findings
+        if latest_review and finding["review_id"] == latest_review["id"]
+    ]
+    open_selected = [
+        thread for thread in selected
+        if not thread["isResolved"] and not thread["isOutdated"]
+    ]
+    clear_assessments = {"No open issues", "No issues found", "Looks good"}
+    current_head = result["pull_request"].get("headRefOid")
+    clear = bool(latest_review and current_head) and latest_review["commit_oid"] == current_head and latest_review["assessment"] in clear_assessments and not open_selected and not latest_findings and all(
+        overview["suppressed_parse_status"] != "present_unparsed" for overview in review_overviews
+    )
+
     output = {
         "pull_request": result["pull_request"],
         "summary": {
             "total_threads": len(result["threads"]),
             "selected_threads": len(selected),
+            "open_selected_threads": len(open_selected),
             "author_patterns": patterns if not args.all_authors else ["*"],
             "include_resolved": args.include_resolved,
             "include_outdated": args.include_outdated,
             "copilot_review_overviews": len(review_overviews),
             "suppressed_findings": len(suppressed_findings),
             "suppressed_parse_statuses": [overview["suppressed_parse_status"] for overview in review_overviews],
+            "clear": clear,
         },
         "threads": selected,
         "review_overviews": review_overviews,
         "suppressed_findings": suppressed_findings,
     }
     print(json.dumps(output, indent=2))
-    return 0
+    return 0 if clear or not args.require_clear else 1
 
 
 if __name__ == "__main__":
