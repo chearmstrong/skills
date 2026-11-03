@@ -140,11 +140,17 @@ lambda_compute_cost =
   duration_seconds * memory_gb * cost_per_gb_second
 
 fargate_cost =
-  runtime_hours * (
+  billed_hours * (
     vcpu_count * cost_per_vcpu_hour
     + memory_gb * cost_per_gb_hour
   )
 ```
+
+For Fargate, calculate billed hours for each task from the start of the image
+download until termination, rounded up to the nearest second and subject to the
+applicable operating-system minimum. Check the current Fargate pricing page
+for the minimum and include other charges, such as additional storage, where
+material.
 
 ## Calculation Mode Decision
 
