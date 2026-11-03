@@ -44,6 +44,32 @@ payload and confirm required persistence exists. Neither readiness nor a
 populated `/key/info` is an enforcement test. Never claim runtime verification
 from documentation, mock tests or a successful CDK synth.
 
+## Check spend-reporting claims
+
+Before designing a spend rollup, state the required time buckets, dimensions
+(such as user, team and model), refresh interval and acceptable accounting
+delay. For the selected LiteLLM release, inspect the endpoint's response,
+pagination, filtering and retention against matching source or documentation;
+then verify completeness and late-arriving or corrected spend with sample data.
+Current [spend-tracking guidance](https://docs.litellm.ai/docs/proxy/cost_tracking)
+describes daily activity and paginated individual spend logs, but their shape
+and behaviour must be checked against the deployed version.
+
+- A daily cumulative total refreshed every hour is still daily data. It can
+  show the latest daily total, not exact hourly spend. Exact hourly reporting
+  needs spend recorded at event time with a usable timestamp and complete
+  coverage; differences between snapshots can include late or corrected data.
+- Separate the number of aggregate rows from physical writes or transactions.
+  Two model buckets imply two logical totals, but batching and upserts decide
+  how many database operations occur. Measure that in the intended worker.
+- Attribute spend using the identity and hierarchy valid when it occurred.
+  Current team ownership cannot prove historical team spend. If the chosen
+  aggregate lacks a required dimension, use an appropriate detailed source or
+  explicitly leave that attribution unresolved.
+- Make repeated polls idempotent and reconcile their totals with the source.
+  Check page boundaries, delayed records, corrections and retention before
+  treating the rollup as complete or as a billing ledger.
+
 ## Prove rate limits at the claimed scope
 
 Record the exact image/version, edition, effective key/user/team/model limits,

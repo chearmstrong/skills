@@ -45,7 +45,7 @@ leave coding-client design and repository conventions to their own guidance.
 | Define ECS/CDK resources, deliver config, migrate or roll out | [ECS and CDK patterns](references/ecs-cdk.md) |
 | Configure proxy auth, routing, budgets or telemetry | [Configuration and integrations](references/configuration.md) |
 | Use Python calls or Router, handle parameters, retries, errors or cost | [Python SDK patterns](references/python-sdk.md) |
-| Diagnose startup, request, streaming or accounting failures | [Troubleshooting and verification](references/verification.md) |
+| Diagnose failures or assess spend-reporting claims | [Troubleshooting and verification](references/verification.md) |
 | Find current primary docs or reference implementations | [Source map](references/sources.md) |
 
 Read only the sections needed. Leave other references unloaded until the task

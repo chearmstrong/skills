@@ -1,8 +1,8 @@
 # Primary sources and reference patterns
 
-Source map checked on 29 September 2026. This date records documentation review,
-not live deployment testing. Recheck release-sensitive behaviour against the
-chosen version; current web docs and upstream `main` can be newer than it.
+These links are starting points, not live deployment evidence. Recheck
+release-sensitive behaviour against the chosen version; current web docs and
+upstream `main` can be newer than it.
 Prefer matching release source/tests when documentation differs. If live docs
 are unavailable, state the assumption and leave the relevant behaviour unverified.
 
@@ -14,6 +14,7 @@ are unavailable, state the assumption and leave the relevant behaviour unverifie
 | Pool sizing, workers, logging and production settings | [Production practices](https://docs.litellm.ai/docs/proxy/prod) |
 | Models, credentials and Bedrock API selection | [Bedrock adapter](https://docs.litellm.ai/docs/providers/bedrock) |
 | User/team/key limits | [Budgets](https://docs.litellm.ai/docs/proxy/users) |
+| Proxy spend reports and detailed logs | [Spend tracking](https://docs.litellm.ai/docs/proxy/cost_tracking) |
 | Virtual-key lifecycle | [Virtual keys](https://docs.litellm.ai/docs/proxy/virtual_keys) |
 | Stored credentials, salt and master-key changes | [Key rotation](https://docs.litellm.ai/docs/proxy/master_key_rotations) |
 | Retry/fallback behaviour | [Reliability](https://docs.litellm.ai/docs/proxy/reliability) |
