@@ -17,6 +17,39 @@ it, challenge the plan, then implement and review against the original intent.
 This pattern is most useful for non-trivial changes. For small edits, keep the
 same bias towards clarity and verification without adding unnecessary ceremony.
 
+## Splitting A Large PR
+
+Use [split-pr](../skills/split-pr) when a pull request has become difficult to
+review as one change. Start with a PR URL or branch and, optionally, a preferred
+number of PRs:
+
+```text
+Use split-pr to assess PR #123 for a split into two or three reviewable PRs.
+```
+
+The skill assesses without making changes and presents the scope, dependencies,
+verification and treatment of the original PR for agreement. It recommends
+independent PRs where possible and native GitHub stacks where changes depend on
+one another. It can recommend keeping the original PR together.
+
+After agreement, it reconstructs the split locally, checks each branch and
+compares the combined result with the original change on the same target.
+Publishing requires explicit authorisation, which can be given with approval of
+the proposal. The original branch and PR are preserved by default; existing
+reviews and approvals do not automatically transfer to replacement PRs.
+
+Run the local workflow trial with Python and Git:
+
+```bash
+python3 -m unittest discover -s tests -p test_split_pr_workflow.py -v
+```
+
+The trial creates temporary repositories and worktrees, reconstructs a mixed
+change, and checks preservation and failure cases. It makes no network requests
+and removes its temporary repositories afterwards. It tests the local Git
+recipe; it does not establish that an agent will honour the approval checkpoint
+or that native GitHub stack publishing works.
+
 ## Related Patterns
 
 - [GitHub Spec Kit](https://github.github.com/spec-kit/) describes a
