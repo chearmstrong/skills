@@ -14,7 +14,7 @@ Make operational content difficult to misunderstand. Apply a lightweight approac
 
 Use this for instructions and operational descriptions. Do not impose it on narrative explanations, ADR rationale, stakeholder messages, blogs, quotations, logs, commands, identifiers, API terms, or deliberate personal voice unless requested.
 
-If the `technical-writing` skill exists, use it as a companion for evidence, structure, audience fit, and publication safety. Apply tone-of-voice guidance only after operational clarity is secure.
+Use the `technical-writing` skill as a companion for evidence, structure, audience fit, and publication safety when it is installed. If it is not installed and web access is available, optionally consult its [published guidance](https://github.com/chearmstrong/skills/blob/main/skills/technical-writing/SKILL.md) and relevant references. Continue with this skill if it is unavailable. Apply tone-of-voice guidance only after operational clarity is secure.
 
 Resolve conflicts in this order:
 
