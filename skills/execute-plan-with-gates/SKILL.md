@@ -133,6 +133,8 @@ Default to `execution=main` unless the user explicitly asks for sub-agent, deleg
 
 Use sub-agents only when ownership can be stated precisely. Avoid delegation for continuous shared context, unclear ownership, fragile migrations, or risky cross-cutting edits unless the user explicitly confirms that trade-off.
 
+Start each new sub-agent without parent conversation history when supported; inherit it if materially useful. Include relevant decisions, constraints, evidence, and expected verification in the hand-off, and instruct the sub-agent to stay within its stated scope.
+
 | Sub-agent pattern | Allowed when | Default |
 | --- | --- | --- |
 | Sequential delegation | Ownership overlaps, a supporting skill recommends one implementer at a time, or integration risk is unclear. | Use this unless parallel safety is obvious. |

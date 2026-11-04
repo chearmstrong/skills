@@ -33,10 +33,11 @@ Expected tools: shell access to `git` and `gh` where available.
 
 1. Inventory the complete changed-file list and diff statistics against one explicit base and head.
 2. Split the diff into **2-4 non-overlapping logical areas** when coherent boundaries exist. Prefer application behaviour, persistence, infrastructure, tests, or documentation. Keep one area when the change is genuinely inseparable; never create equal-sized but incoherent batches.
-3. If the host supports subagents, assign one read-only reviewer to each area. Run independent areas in parallel when supported. Give every reviewer:
+3. If the host supports subagents, assign one read-only reviewer to each area. Start each without parent conversation history when supported; inherit it if materially useful. Run independent areas in parallel when supported. Give every reviewer:
    - the same base and head;
    - an explicit list of files or diff paths;
    - the reasoning and gatekeeping criteria below;
+   - relevant decisions and evidence needed for the review;
    - instructions to return only actionable, line-anchored findings with evidence, or state that there are none;
    - instructions not to edit, stage, commit, push, post comments, or expand its scope.
 4. Subdivide an oversized area only where another coherent boundary exists. Keep tightly coupled changes together even when they remain above the numeric threshold.

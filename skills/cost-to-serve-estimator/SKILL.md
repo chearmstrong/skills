@@ -60,7 +60,7 @@ Do not hard-code remembered prices. Always use current provider pricing for the 
    - Recalculate material totals independently with a deterministic tool, not mental arithmetic.
    - Check claims against repo config and implementation.
    - For documentation changes, run the repo's documentation generation/build checks when available.
-   - If possible and useful, ask a subagent to review the estimate for factual, arithmetic, and overclaiming issues, then verify any changes locally.
+   - If possible and useful, ask a subagent to review the estimate for factual, arithmetic, and overclaiming issues, then verify any changes locally. Start without parent conversation history when supported; inherit it if materially useful. Provide the estimate, assumptions, sources, relevant decisions, constraints, and expected verification; keep the review within its stated scope.
 
 ## Output Mode Decision
 
