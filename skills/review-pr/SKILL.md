@@ -23,10 +23,10 @@ Expected tools: shell access to `git` and `gh` where available.
 
 ## Establish the Review Scope
 
-- Use the requested base and head. Otherwise compare the current branch with `origin/main`.
-- Refresh refs when needed and safe with `git fetch --all --prune`.
-- Inventory the change with `git diff --stat` and `git diff --name-only`; use `git diff --unified=0` for exact changed lines.
-- Start with diff hunks. Open only the context needed to prove or disprove a concern, with at most five targeted lookups per changed file.
+- Use explicitly requested base and head commits. For a PR URL or number, obtain its base and head from the hosting service; if they cannot be established, report the limit rather than substituting another comparison. For a branch review without a specified base, compare the branch with `origin/main`.
+- Use the hosting service's read-only PR diff or existing refs. Check ref freshness against remote evidence; disclose when it cannot be established. If fresh refs are needed, obtain approval before a targeted fetch; do not prune refs as part of the review.
+- Resolve the base and head to explicit commits. For a PR-style branch review, compare their merge base to the head (`git diff --stat BASE...HEAD`, `git diff --name-only BASE...HEAD`, and `git diff --unified=0 BASE...HEAD`). If the requested scope is a direct comparison of two snapshots, use `BASE HEAD` instead. Use the same endpoints for every diff; if they cannot be resolved, disclose the limit and use the hosting service's PR diff when available.
+- Start with diff hunks. Use five targeted lookups per changed file as a starting budget; expand the context when needed to prove or disprove a concern.
 - Treat a diff of **more than 400 lines** or **more than 20 files** as oversized. Use the workflow below rather than asking the user to narrow the scope solely because of size.
 
 ## Oversized Review Workflow
@@ -45,7 +45,7 @@ Expected tools: shell access to `git` and `gh` where available.
 6. The main agent validates every candidate finding against the diff and necessary local context. Deduplicate overlaps and reject unsupported findings; reviewer agreement is not proof.
 7. Consolidate the validated results into the output contract below. Its limits apply to the combined review, not to each reviewer.
 
-If delegation is unavailable, state that limitation and ask the user to narrow the review to one logical area.
+If delegation is unavailable, review the coherent areas sequentially, then perform the same cross-area analysis and consolidation. State any areas that could not be reviewed and the resulting coverage limit.
 
 ## Review Reasoning
 
