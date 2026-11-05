@@ -47,8 +47,7 @@ See [AWS memory-augmented agents](https://docs.aws.amazon.com/prescriptive-guida
   handoff or rollback path for external side effects.
 
 [Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
-and [Databricks](https://docs.databricks.com/aws/en/agents/agent-system-design-patterns)
-describe the cost, compounding-error, and loop-control trade-offs.
+describes the cost, compounding-error, and loop-control trade-offs.
 
 ## Observability, Evaluation, And Cost
 
