@@ -1,54 +1,55 @@
 # Working Style
 
-For new work items, I usually prefer a deliberate agent workflow. It overlaps
-with what GitHub Spec Kit calls
-[Spec-Driven Development](https://github.github.com/spec-kit/), but the useful
-part is not the label. The practical habit is to define the work before building
-it, challenge the plan, then implement and review against the original intent.
+For substantive work with coding agents, I prefer to establish the outcome,
+constraints and success criteria before implementation, then challenge the
+approach against the codebase and available evidence. A plan gives us something
+to work from, but implementation can reveal assumptions worth revisiting.
 
-1. Brainstorm the goal, constraints, success criteria, and useful alternatives.
+1. Understand the goal, constraints, success criteria and useful alternatives.
 2. Plan the implementation in enough detail that the work can be checked.
-3. Refine the plan by grilling it against the codebase, project language, and
-   documentation.
-4. Implement the agreed plan with focused, verifiable changes.
-5. Review the result for correctness, regressions, missing tests, and drift from
-   the original goal.
+3. Grill the plan against the codebase, project language and documentation.
+4. Implement the agreed approach with focused, verifiable changes.
+5. Review correctness, regressions, tests and whether the result meets the goal.
+6. Reassess the approach: knowing what we now know, would we still choose it?
 
-This pattern is most useful for non-trivial changes. For small edits, keep the
-same bias towards clarity and verification without adding unnecessary ceremony.
+Revisit the plan when the evidence changes. For small edits, keep the same bias
+towards clarity and verification without adding unnecessary ceremony.
+
+## Keep It Simple
+
+I favour the simplest approach that preserves the required behaviour and
+guarantees. Check whether existing capabilities, composition or configuration
+can meet the need before adding custom code. Consider maintenance and operator
+effort as well as code size. When simplifying, remove the redundant code,
+credentials and dependencies that the old approach needed.
+
+## Decisions And Reviews
+
+Explain what was built in plain English, including consequential trade-offs and
+operator responsibilities. For each open decision that could change the outcome,
+give me up to three useful options and a recommendation. Settle routine details
+through evidence, and separate required fixes from optional improvements.
+
+Use bounded, independent reviews where another perspective could change the
+decision. Start reviewers with fresh contexts unless the history is materially
+useful, and include the relevant evidence in the hand-off. Validate and
+consolidate their findings before proposing changes.
+
+Keep structural checks, local tests, agent behavioural trials and live
+verification distinct. Passing one does not establish the others. Carry useful
+clarifications and agreed decisions back into the documentation.
+
+Use [implementation-reassessment](../skills/implementation-reassessment) to
+revisit an implemented approach, and [skill-review](../skills/skill-review) to
+assess a skill's quality and evidence of effectiveness.
 
 ## Splitting A Large PR
 
 Use [split-pr](../skills/split-pr) when a pull request has become difficult to
-review as one change. Start with a PR URL or branch and, optionally, a preferred
-number of PRs:
-
-```text
-Use split-pr to assess PR #123 for a split into two or three reviewable PRs.
-```
-
-The skill assesses without making changes and presents the scope, dependencies,
-verification and treatment of the original PR for agreement. It recommends
-independent PRs where possible and native GitHub stacks where changes depend on
-one another. It can recommend keeping the original PR together.
-
-After agreement, it reconstructs the split locally, checks each branch and
-compares the combined result with the original change on the same target.
-Publishing requires explicit authorisation, which can be given with approval of
-the proposal. The original branch and PR are preserved by default; existing
-reviews and approvals do not automatically transfer to replacement PRs.
-
-Run the local workflow trial with Python and Git:
-
-```bash
-python3 -m unittest discover -s tests -p test_split_pr_workflow.py -v
-```
-
-The trial creates temporary repositories and worktrees, reconstructs a mixed
-change, and checks preservation and failure cases. It makes no network requests
-and removes its temporary repositories afterwards. It tests the local Git
-recipe; it does not establish that an agent will honour the approval checkpoint
-or that native GitHub stack publishing works.
+review as one change. Agree the proposed split before making changes. Prefer
+independent PRs where possible and a stack where there are dependencies; keeping
+the original PR together is also valid. Verify each part and the combined
+result, preserve the original work, and publish only with explicit authorisation.
 
 ## Related Patterns
 
