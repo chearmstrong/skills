@@ -1,6 +1,6 @@
 ---
 name: split-pr
-description: Assess a large pull request or branch diff and propose smaller, coherent PRs for review. Use when asked to split a PR, break up a large change, or create independent or GitHub stacked pull requests. Prefer independent PRs where possible; require agreement on the proposed split before making changes, then reconstruct and verify the approved split.
+description: Assess a large pull request or branch diff and propose smaller, coherent PRs for review. Use when asked to split a PR, create independent or GitHub stacked pull requests, or update the remaining stack after a lower PR merges. Prefer independent PRs where possible; require agreement before reconstructing a proposed split.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -10,6 +10,8 @@ metadata:
 
 Make a large change easier to review while preserving its combined result.
 Use judgement for boundaries; use explicit evidence for preservation and ancestry.
+For an existing stack after a lower PR merges, go to section 5; a new split
+proposal is not needed.
 
 ## 1. Assess without changes
 
@@ -105,6 +107,15 @@ Only after agreement, read [Execution and verification](references/execution.md)
 in full and follow it. Do not load that reference for assessment-only work.
 Prepare and verify local branches before requesting any missing publishing
 authority. If publishing was already explicitly authorised, proceed within it.
+
+## 5. Maintain a stack after a merge
+
+When asked to update remaining PRs after a lower layer merges, read
+[Post-merge stack maintenance](references/stack-maintenance.md) in full. Start
+by checking whether GitHub has already rebased the stack. Preserve the remaining
+layer diffs and combined result; verify new heads, ancestry, CI and native stack
+membership where applicable. Follow the reference's authority boundary
+for operations that fetch, rewrite or push branches.
 
 ## Guardrails
 

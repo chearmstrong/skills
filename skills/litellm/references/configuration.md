@@ -32,6 +32,23 @@ authentication, and administration. A virtual key is a gateway credential; it is
 not an upstream provider key. Native JWT inference authentication, UI SSO and
 custom auth are separate integrations with edition-specific constraints.
 
+When a task involves login, provisioning or access, trace the actual identity
+path rather than assuming a particular identity provider:
+
+| Boundary | Record and verify |
+| --- | --- |
+| Upstream identity, if present | Provider, stable subject ID, account status and relevant groups or claims |
+| Provisioning, if used | Which mechanism creates or updates the LiteLLM user, and the identifier used to match an existing user |
+| LiteLLM access | User ID, if any; role, team or Organisation membership, key ownership and relevant effective model/budget permissions |
+
+Check each mechanism the deployment actually uses, such as SSO, SCIM, a
+management API or custom synchronisation. Login, user provisioning, inference
+authentication and budget enforcement are separate claims; prove only the ones
+the task needs. For changes to account status, roles or membership, verify the
+resulting access with the intended restricted identity. Confirm identifier
+mapping, update behaviour and feature availability in the pinned release and
+edition; do not infer them from another provider's integration.
+
 For OSS custom auth, inspect the supported hook and returned identity contract.
 Prove native model/budget enforcement still runs for that identity; returning a
 validated user alone is insufficient. Never grant an administrative identity

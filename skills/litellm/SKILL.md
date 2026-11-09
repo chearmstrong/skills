@@ -1,6 +1,6 @@
 ---
 name: litellm
-description: Use when developing, configuring, deploying, reviewing, or troubleshooting LiteLLM Python SDK usage or an LLM gateway/OpenAI-compatible proxy, including local development, routing, Bedrock, ECS/Fargate, CDK, virtual keys, budgets, spend tracking, OpenTelemetry, Prisma migrations, and upgrades.
+description: Use when developing, configuring, deploying, reviewing, or troubleshooting LiteLLM Python SDK usage or an LLM gateway/OpenAI-compatible proxy, including local development, routing, Bedrock, ECS/Fargate, CDK, virtual keys, identity mapping, SSO, SCIM, budgets, spend tracking, OpenTelemetry, Prisma migrations, and upgrades.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -43,7 +43,7 @@ leave coding-client design and repository conventions to their own guidance.
 | --- | --- |
 | Run locally, prepare config, exercise a client | [Local development](references/local-development.md) |
 | Define ECS/CDK resources, deliver config, migrate or roll out | [ECS and CDK patterns](references/ecs-cdk.md) |
-| Configure proxy auth, routing, budgets or telemetry | [Configuration and integrations](references/configuration.md) |
+| Configure proxy auth, identity mapping, routing, budgets or telemetry | [Configuration and integrations](references/configuration.md) |
 | Use Python calls or Router, handle parameters, retries, errors or cost | [Python SDK patterns](references/python-sdk.md) |
 | Diagnose failures or assess spend-reporting claims | [Troubleshooting and verification](references/verification.md) |
 | Find current primary docs or reference implementations | [Source map](references/sources.md) |
