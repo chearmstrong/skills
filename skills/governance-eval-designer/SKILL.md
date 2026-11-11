@@ -1,12 +1,22 @@
 ---
 name: governance-eval-designer
-description: "Use when designing or reviewing AI workflow governance: audit fields, decision traces, approval gates, pause or stop rules, rollout widen gates, offline evals, golden datasets, eval harnesses, structured-output validators, or repo-aware governance templates for agents, RAG/docs assistants, support assistants, coding agents, and approval-gated automations."
+description: "Use when designing or reviewing the checks, evaluations, approval rules and rollout controls needed to operate an AI workflow safely. Covers launch readiness, increased agent autonomy, audit records, decision traces, structured-output validation and evaluation plans for assistants, agents and automations, grounded in project evidence."
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
 ---
 
 # Governance Eval Designer
+
+Help design or review the checks, tests and approval rules needed to operate an AI workflow safely. Inspect the project's code and workflow evidence, then recommend what to test, what to record, when human approval is needed, and when to stop or expand its use.
+
+Use this when asking questions such as:
+
+- “Is this assistant ready to launch?”
+- “Can we let this agent take actions?”
+- “What evidence would justify giving it more autonomy?”
+
+The skill works across repositories and platforms, with recommendations grounded in the project being inspected. It designs evaluations and controls; running evaluations or implementing those controls requires a separate request.
 
 ## Core Rule
 
