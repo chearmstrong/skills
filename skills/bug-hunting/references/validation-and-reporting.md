@@ -2,13 +2,15 @@
 
 ## Evidence Standard
 
-A reportable bug needs one or more:
+A reportable bug needs evidence of incorrect behaviour or a concrete violated invariant, supported by one or more:
 
 - Reproduction steps or failing command.
-- Failing or absent regression test tied to a specific invariant.
-- Static trace from attacker/user/input/source to sink.
+- Failing regression test demonstrating incorrect behaviour or a violated invariant.
+- Static trace from attacker/user/input/source to sink showing how a reachable path violates expected behaviour or an invariant.
 - Contradiction with documented behaviour, schema, migration, or API contract.
 - Comparison with a working local pattern that proves this path is inconsistent.
+
+Missing coverage is a verification gap, not proof of a bug. Describe it under verification limits or residual risk, and recommend a focused test where it would resolve uncertainty. Only report a bug when evidence meets the standard above.
 
 Do not report:
 
@@ -23,7 +25,7 @@ Do not report:
 - **Critical**: likely unauthorised access, data loss/corruption, secret exposure, remote code execution, or destructive infrastructure change.
 - **High**: credible security bypass, cross-tenant leak, non-idempotent duplicate write, major outage path, or resource replacement risk.
 - **Medium**: incorrect behaviour under realistic edge cases, partial failure, pagination loss, retry bug, missing guard with bounded blast radius.
-- **Low**: real but narrow bug, dead branch hiding intended behaviour, misleading error handling, or missing test for a fragile invariant.
+- **Low**: real but narrow bug, dead branch hiding intended behaviour, or misleading error handling.
 
 ## Final Response Shape
 

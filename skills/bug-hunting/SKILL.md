@@ -61,7 +61,8 @@ Use this table to decide where to spend attention before deep reading:
    - Check edge cases: empty input, missing identity, wrong tenant, duplicate delivery, partial failure, stale state, boundary counts, pagination, ordering, timeouts.
 
 4. **Validate before reporting**
-   - A finding needs at least one concrete proof: reachable path, failing or missing invariant test, static trace, repro steps, log/error evidence, or a direct contradiction with documented behaviour.
+   - A finding needs evidence of incorrect behaviour or a concrete violated invariant: a failing test, reproduction, log/error evidence, or static trace showing how a reachable path violates expected behaviour or a documented contract.
+   - Missing coverage is a verification gap, not proof of a bug. Report it as residual risk and recommend a focused test where it would resolve uncertainty.
    - Suppress issues already handled by surrounding code, framework defaults, generated constraints, or existing tests.
    - Do not report style, preference, or maintainability concerns unless they create a credible behavioural risk.
 
@@ -87,7 +88,7 @@ Good finding:
 ```text
 File: src/jobs/processOrder.ts:84
 Problem: SQS retry can charge the same order twice.
-Why this is real: The handler creates a new payment intent before recording a deterministic idempotency key. A timeout after the external call but before `orders.update` lets the same message retry and repeat the charge path. No conditional write or duplicate-delivery test covers this.
+Why this is real: The handler creates a new payment intent before recording a deterministic idempotency key. A timeout after the external call but before `orders.update` lets the same message retry and repeat the charge path. No conditional write prevents the second charge.
 Fix or verification step: Use order ID as the payment idempotency key and add a duplicate-message regression test.
 ```
 
