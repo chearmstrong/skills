@@ -29,21 +29,23 @@ and verifiable. Treat autonomy as a design choice, not a maturity ladder.
 | State, tools, approval, release, operations, evaluation, cost, or resource-efficiency concern; model or computational approach selection | Relevant section of [operational controls](references/operational-controls.md) | Source map unless making a source-backed external claim. |
 | Source-backed external claim or source-quality assessment | [source map](references/source-map.md) | Other references when the claim does not concern their topic. |
 
-When a focused skill is available, use it rather than broadening this one. If
-it is unavailable, apply the relevant checks here, state that the specialised
-workflow was not available, and do not imply that its deeper analysis ran.
+Use the relevant focused skill when it is installed. If it is not installed
+and web access is available, optionally consult its published guidance linked
+below and read supporting references only when relevant. If neither source is
+accessible, apply the minimum fallback below, state the limitation, and do not
+imply that the specialised workflow ran.
 
-- tool-vs-mcp-boundary-review for an inline helper, agent tool, or MCP boundary
+- [tool-vs-mcp-boundary-review](https://github.com/chearmstrong/skills/blob/main/skills/tool-vs-mcp-boundary-review/SKILL.md) for an inline helper, agent tool, or MCP boundary
   decision.
-- governance-eval-designer for detailed approval, trace, evaluation, or
+- [governance-eval-designer](https://github.com/chearmstrong/skills/blob/main/skills/governance-eval-designer/SKILL.md) for detailed approval, trace, evaluation, or
   rollout-control design.
-- agentcore-guardrails for Amazon Bedrock AgentCore behaviour or AWS
+- [agentcore-guardrails](https://github.com/chearmstrong/skills/blob/main/skills/agentcore-guardrails/SKILL.md) for Amazon Bedrock AgentCore behaviour or AWS
   implementation decisions.
-- architecture-compliance-check to verify a proposal or implementation against
+- [architecture-compliance-check](https://github.com/chearmstrong/skills/blob/main/skills/architecture-compliance-check/SKILL.md) to verify a proposal or implementation against
   documented repository architecture.
 
-When a focused skill is unavailable, use this minimum fallback and name the
-limitation in the output:
+When neither the installed skill nor its published guidance is accessible,
+use this minimum fallback and name the limitation in the output:
 
 | Unavailable skill | Minimum fallback |
 | --- | --- |

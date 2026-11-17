@@ -72,7 +72,7 @@ Use this review path automatically when the request supplies an ADR, agreed deci
 3. **Check representation, not viability.** Find contradictions, obsolete terms, unsupported certainty, missing consequences, and a mismatch between diagrams, summaries, ADRs, and detailed design. Keep the decision source canonical rather than reconciling conflicts by averaging them.
 4. **Report the smallest correction.** Name the decision source and conflicting location, then propose the least invasive wording, deletion, link, or clarification that restores consistency.
 
-Use `architecture-compliance-check` alongside this skill when it is available and the question is whether the architecture itself is viable, implemented, secure, or correctly bounded. Keep responsibilities separate:
+Use [architecture-compliance-check](https://github.com/chearmstrong/skills/blob/main/skills/architecture-compliance-check/SKILL.md) alongside this skill when it is installed and the question is whether the architecture itself is viable, implemented, secure, or correctly bounded. If it is not installed and web access is available, optionally consult its published guidance and relevant references. If neither source is accessible, continue with documentation review, state the limitation, and leave architecture viability unassessed. Keep responsibilities separate:
 
 - **This skill:** whether documentation represents an agreed decision consistently and is readable, traceable, and safe to act on.
 - **`architecture-compliance-check`:** whether the decision is supported by implementation and authoritative evidence, with sound contracts, assumptions, and boundaries.

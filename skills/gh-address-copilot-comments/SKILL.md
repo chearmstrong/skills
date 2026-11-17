@@ -12,7 +12,7 @@ metadata:
 
 Use this skill to work through GitHub Copilot automated PR review comments with thread-aware context. Treat `gh pr view --comments` as a lightweight summary only. Use the bundled helpers to inventory both inline review threads and Copilot review-overview findings, including findings GitHub suppresses rather than creating as threads.
 
-When Copilot comments need deeper local verification, batching, or hand-off between agents, convert the relevant thread comments to the portable review-comment format and use a verification pass before resolving threads. If a dedicated review-comment skill is installed, use it; otherwise verify each comment manually with the same verdicts used below.
+When Copilot comments need deeper local verification, batching, or hand-off between agents, convert the relevant thread comments to the portable review-comment format and use a verification pass before resolving threads. Use [review-comments](https://github.com/chearmstrong/skills/blob/main/skills/review-comments/SKILL.md) when it is installed. If it is not installed and web access is available, optionally consult its published guidance and relevant references. If neither source is accessible, verify each comment manually with the same verdicts used below.
 
 ## Workflow
 

@@ -25,8 +25,18 @@ when quoting APIs, logs, external text, or identifiers.
   `scripts/`, and static templates in `assets/`.
 - Keep product-specific files optional; a skill should still make sense to an
   agent that only reads `SKILL.md`.
-- Do not rename existing skill directories without updating every manifest and
-  README reference in the same change.
+
+## Companion Skills
+
+- When naming a companion skill as guidance, link directly to its published
+  `SKILL.md`. Prefer installed guidance; allow optional web consultation and
+  state how to continue when neither source is accessible.
+- Read supporting references only when relevant to the task. Keep companion
+  guidance optional unless the workflow requires it.
+- When adding or changing a companion reference, verify that the link points
+  to the intended published skill. Report any verification limitation.
+- When renaming or removing a skill, update affected companion references,
+  links, README entries, and manifests in the same change.
 
 ## Plugin Metadata
 
@@ -47,14 +57,17 @@ when quoting APIs, logs, external text, or identifiers.
 - Make small, focused changes.
 - Match the existing Markdown style.
 - Avoid broad refactors, reformatting, or unrelated cleanup.
-- Prefer relative links in repository documentation.
+- Use relative links for resources bundled with the skill and repository
+  documentation; use published URLs for companion skills that may be installed
+  separately.
 - If generated tables or manifests change, update only the affected entries.
 
 ## Verification
 
 Before claiming changes are ready:
 
-- Run the available skill validation command if one exists in the environment.
+- Run `./scripts/validate-skills.sh skills/<name>` for each changed skill;
+  run `./scripts/validate-skills.sh` for bundle-wide changes.
 - Check `git diff --check`.
 - Review the diff for portability, stale manifest entries, and accidental
   product-specific assumptions.
