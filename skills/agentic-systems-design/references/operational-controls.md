@@ -61,3 +61,21 @@ describes the cost, compounding-error, and loop-control trade-offs.
 [AWS observer and monitoring agents](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-patterns/observer-and-monitoring-agents.html)
 and [Google Cloud cost optimisation](https://docs.cloud.google.com/architecture/framework/perspectives/ai-ml/cost-optimization)
 provide useful source material.
+
+## Resource Efficiency
+
+- When selecting or changing a model or computational approach, compare
+  plausible deterministic and smaller-model alternatives against the same
+  task-quality, safety and latency requirements. Select a lower-resource
+  option only when it meets those requirements.
+- Compare resource use per successful task on the same representative workload,
+  including retries, validation and fallback calls. Use available measures
+  such as token volume, compute time or memory, stating their limits as proxies
+  for energy use. If measurements are unavailable, name the smallest evaluation
+  needed and keep resource savings unverified.
+- Report financial cost, resource use and carbon impact as distinct claims.
+  A lower price or smaller model alone does not prove lower energy use or
+  emissions; carbon claims need an explicit measurement or estimation basis.
+
+For AWS-specific guidance, see the Well-Architected entries in the
+[source map](source-map.md). The comparison above is provider-neutral.

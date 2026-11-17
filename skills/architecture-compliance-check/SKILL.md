@@ -29,6 +29,8 @@ Choose one primary mode. Before applying it, read the required references below 
 
 When a platform-spike or research-and-inventory review compares vendor editions, versions, clients or supported integrations, read [Platform Capability Evidence](references/platform-capability-evidence.md) before assigning decision gates. Use its capability matrix and pilot proof alongside the existing evidence records. Do not load it for unrelated compliance reviews.
 
+When the review includes AWS Well-Architected alignment, also read [AWS Well-Architected Reviews](references/aws-well-architected.md). Apply it alongside the selected mode; it is not required for repository compliance alone.
+
 ## Compliance Decision Tree
 
 Use the smallest branch that answers the architectural question.

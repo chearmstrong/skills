@@ -25,8 +25,8 @@ and verifiable. Treat autonomy as a design choice, not a maturity ladder.
 
 | Need | Read | Do not read |
 | --- | --- | --- |
-| Any pattern or autonomy decision | [pattern selection](references/pattern-selection.md) | Operational controls when the decision has no tools, state, side effects, or release concern. |
-| State, tools, approval, release, operations, evaluation, or cost concern | Relevant section of [operational controls](references/operational-controls.md) | Source map unless making a source-backed external claim. |
+| Any pattern or autonomy decision | [pattern selection](references/pattern-selection.md) | Operational controls when no other routing row applies. |
+| State, tools, approval, release, operations, evaluation, cost, or resource-efficiency concern; model or computational approach selection | Relevant section of [operational controls](references/operational-controls.md) | Source map unless making a source-backed external claim. |
 | Source-backed external claim or source-quality assessment | [source map](references/source-map.md) | Other references when the claim does not concern their topic. |
 
 When a focused skill is available, use it rather than broadening this one. If
