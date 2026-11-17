@@ -8,7 +8,7 @@ metadata:
 
 # Review PR
 
-Review another author's changes for material correctness, security, reliability, performance, and maintainability risks. Work read-only and produce only evidence-backed findings worth the author's attention.
+Explain what another author's changes do, then review them for material correctness, security, reliability, performance, and maintainability risks. Work read-only and report only evidence-backed findings worth the author's attention.
 
 Argument hint: optional branch, PR number, or file scope.
 
@@ -84,7 +84,8 @@ Never:
 
 Return Markdown only:
 
-- **SUMMARY** — one paragraph describing the change and overall assessment.
+- **PR SUMMARY** — always start with a concise, plain-English explanation of what the PR does, including when there are no findings. Cover the problem or purpose, the main behaviour changes (before and after where useful), and how the key parts fit together. Scale the detail to the change; avoid a file-by-file inventory. Ground the explanation in the diff and relevant code, distinguish the author's stated intent from verified behaviour, and say when the purpose is unclear.
+- **REVIEW ASSESSMENT** — a short overall assessment, including what was checked and any verification or coverage limits. Keep review findings here and in the sections below so the PR summary remains focused on understanding the change.
 - **DRAFT PR COMMENTS (maximum 5)** — ordered by severity and framed as questions without weakening known evidence. Each contains:
   - **File:** `path/to/file.ext:line`
   - **Question:** the requested clarification or change
