@@ -134,6 +134,8 @@ For eval requests, default the answer to:
 - Scoring dimensions: task success, evidence grounding, schema validity, policy compliance, correct refusal/escalation, approval evidence completeness, write safety.
 - Release gate: explicit thresholds plus zero-tolerance failures for unsafe writes, approval bypass, unrecoverable schema errors, and unsupported claims.
 
+Report the sample size, sampling scope and, where meaningful, uncertainty. Zero observed failures in a small slice do not prove the workflow is safe.
+
 Use existing logs, decision records, review comments, support tickets, golden files, or tests as the first dataset source. If synthetic cases are needed, label them separately and do not let them replace real slices.
 
 Calibrate thresholds to the workflow risk:
