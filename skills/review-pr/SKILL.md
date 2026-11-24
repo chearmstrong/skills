@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Use when reviewing another person's pull request, PR URL or number, or branch diff and the user wants a read-only review with line-anchored draft comments; do not use for self-review.
+description: Use when reviewing another person's pull request, stacked PRs, PR URL or number, or branch diff and the user wants a read-only review with line-anchored draft comments; do not use for self-review.
 metadata:
   author: "chearmstrong"
   canonical-source: "https://github.com/chearmstrong/skills"
@@ -29,12 +29,22 @@ Expected tools: shell access to `git` and `gh` where available.
 - Start with diff hunks. Use five targeted lookups per changed file as a starting budget; expand the context when needed to prove or disprove a concern.
 - Treat a diff of **more than 400 lines** or **more than 20 files** as oversized. Use the workflow below rather than asking the user to narrow the scope solely because of size.
 
+## Stacked PR Reviews
+
+When asked to review a stack, or a PR whose safety depends on another layer, establish the intended merge plan before assessing readiness. Record each PR's current base and head, its own review diff, and whether the layers are expected to merge separately or as one combined change. Verify ancestry or construct a read-only combined comparison from the actual commits; stack position alone does not prove that the top head contains every layer. If the combined tree cannot be established, state that limit.
+
+Review each requested layer against its own base, then inspect the combined result for contracts that cross layers: an API accepting work before its processor can handle it, migrations and configuration needed by another layer, shared authorization or data invariants, and deployment or rollback assumptions. Check the repository's actual deployment path when a finding depends on rollout order. Do not treat a defect in an intermediate state as a blocker when that state cannot ship under the agreed merge plan; do not assume a squash merge fixes a gap that remains in the combined tree.
+
+Anchor actionable comments to changed lines in the layer that owns the fix. In the assessment, distinguish layer-specific findings, combined-result findings, and risks that depend on an unverified merge or deployment plan. If layers may merge separately, assess each independently deployable state as well as the final result.
+
+For an oversized stack, apply the workflow below to each comparison that needs subdivision, then reconcile findings across layers. Keep reviewer endpoints consistent within each comparison.
+
 ## Oversized Review Workflow
 
-1. Inventory the complete changed-file list and diff statistics against one explicit base and head.
+1. Inventory the complete changed-file list and diff statistics against one explicit base and head for the comparison being reviewed.
 2. Split the diff into **2-4 non-overlapping logical areas** when coherent boundaries exist. Prefer application behaviour, persistence, infrastructure, tests, or documentation. Keep one area when the change is genuinely inseparable; never create equal-sized but incoherent batches.
 3. If the host supports subagents, assign one read-only reviewer to each area. Start each without parent conversation history when supported; inherit it if materially useful. Run independent areas in parallel when supported. Give every reviewer:
-   - the same base and head;
+   - the same base and head for their assigned comparison;
    - an explicit list of files or diff paths;
    - the reasoning and gatekeeping criteria below;
    - relevant decisions and evidence needed for the review;
